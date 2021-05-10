@@ -1,0 +1,81 @@
+{
+  "name": "sgcc-patrol-vue2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "animate.css": "^4.1.1",
+    "ant-design-vue": "^1.7.2",
+    "axios": "^0.21.0",
+    "better-scroll": "^2.2.1",
+    "bufferutil": "^4.0.3",
+    "core-js": "^3.6.5",
+    "crypto-js": "^4.0.0",
+    "decimal.js": "^10.2.1",
+    "dplayer": "^1.26.0",
+    "echarts": "^4.9.0",
+    "element-ui": "^2.14.1",
+    "file-saver": "^2.0.5",
+    "flv.js": "^1.5.0",
+    "gm-crypto": "^0.1.7",
+    "hls.js": "^0.14.17",
+    "howler": "^2.2.1",
+    "js-cookie": "^2.2.1",
+    "konva": "^7.2.5",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "papaparse": "^5.3.0",
+    "register-service-worker": "^1.7.1",
+    "script-loader": "^0.7.2",
+    "stompjs": "^2.3.3",
+    "store": "^2.0.12",
+    "swiper": "^5.4.5",
+    "three": "^0.122.0",
+    "vue": "^2.6.12",
+    "vue-awesome-swiper": "^4.1.1",
+    "vue-echarts": "^5.0.0-beta.0",
+    "vue-i18n": "^8.22.2",
+    "vue-infinite-scroll": "^2.0.2",
+    "vue-router": "^3.4.9",
+    "vuex": "^3.5.1",
+    "xgplayer": "^2.18.3",
+    "xgplayer-flv": "^2.4.13",
+    "xlsx": "^0.16.9"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-pwa": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-component": "^1.1.1",
+    "eslint": "^7.14.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-vue": "^6.2.2",
+    "image-webpack-loader": "^7.0.1",
+    "less": "^3.0.4",
+    "less-loader": "^7.0.2",
+    "lint-staged": "^10.5.1",
+    "postcss-px-to-viewport": "^1.1.1",
+    "prettier": "^2.1.2",
+    "style-resources-loader": "^1.4.1",
+    "vue-cli-plugin-style-resources-loader": "^0.1.4",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,vue}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  }
+}

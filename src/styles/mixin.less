@@ -1,0 +1,50 @@
+.clearfix() {
+  zoom: 1;
+
+  &:after {
+    content: '.';
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+  }
+}
+
+.text-hyphens() {
+  hyphens: auto;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+}
+
+.text-ellipsis(@line: 1) when (@line = 1) {
+  overflow: hidden;
+  word-wrap: normal;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.text-ellipsis(@line) when (@line > 1) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: @line;
+  -webkit-box-orient: vertical;
+}
+
+.text-placeholder(@prefix: input, @color: #ccc, @fontSize: 16px) {
+  @{prefix}::-webkit-input-placeholder {
+    color: @color;
+    font-size: @fontSize;
+  }
+  @{prefix}:-ms-input-placeholder {
+    color: @color;
+    font-size: @fontSize;
+  }
+  @{prefix}::-moz-placeholder {
+    color: @color;
+    font-size: @fontSize;
+  }
+  @{prefix}:-moz-placeholder {
+    color: @color;
+    font-size: @fontSize;
+  }
+}
