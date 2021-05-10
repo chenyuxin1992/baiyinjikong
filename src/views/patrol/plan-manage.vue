@@ -709,9 +709,9 @@ export default {
     this.getSelectData();
     this.getTableData();
   },
-  beforeDestroy() {
-    this.$bus.$off('identified');
-  },
+  // beforeDestroy() {
+  //   this.$bus.$off('identified');
+  // },
 
   methods: {
     handleQueryData() {
@@ -1179,6 +1179,7 @@ export default {
       switch (action) {
         case 'issue':
           this.$bus.$emit('identify');
+          this.$bus.$off('identified');
           this.$bus.$on('identified', () => {
             this.$api
               .postControlApi({
