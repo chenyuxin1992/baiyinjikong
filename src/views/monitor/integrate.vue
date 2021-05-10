@@ -728,10 +728,15 @@
           <div class="aside-title">预置点位</div>
           <ul class="camera-preset">
             <template v-if="cameraModel.presetList.length > 0">
-              <li
+              <!-- <li
                 v-for="item in cameraModel.presetList"
                 :key="item.id"
                 @dblclick="sendCameraCmd(ptzCMD.GET_PRESET, item.preset_no)"
+              > -->
+              <li
+                v-for="item in cameraModel.presetList"
+                :key="item.id"
+                @dblclick="callPresetpoint(item.ptz_h, item.ptz_v, item.ipc_z)"
               >
                 {{ item.name }}
               </li>
@@ -1279,6 +1284,28 @@ export default {
             this.$message.error('机器人控制指令发送失败！');
           });
       }
+    },
+    callPresetpoint(ptzh,ptzv,ptzz){
+      console.log(ptzh,ptzv,ptzz);
+      this.$api
+        .getMediaApi('setptzpos', {
+          idx: this.cameraId,
+          no: this.cameraNo,
+          ptzh: ptzh,
+          ptzv: ptzv,
+          ptzz: ptzz,
+        })
+        .then((res) => {
+          // if (res.success) {
+          //   // 设置云台状态
+          //   if ((cmd & 1) === 0) {
+          //     this.rotate = true;
+          //   } else {
+          //     this.command = 0;
+          //     this.rotate = false;
+          //   }
+          // }
+        });      
     },
     sendCameraCmd(cmd, para1, para2) {
       if (!this.cameraId || !this.cameraNo) return;

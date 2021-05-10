@@ -383,20 +383,41 @@ export default {
           }
         });
     },
-    setPtzPreset(preset, speed = 5) {
+    // setPtzPreset(preset, speed = 5) {
+    //   this.$api
+    //     .getMediaApi('ptzControl', {
+    //       idx: this.did,
+    //       no: this.cno,
+    //       command: PtzCMD.GET_PRESET,
+    //       para1: preset.preset_no,
+    //       para2: speed,
+    //     })
+    //     .then((res) => {
+    //       if (!res) return;
+    //       console.log(res);
+    //     });
+    // },
+    setPtzPreset(preset) {
       this.$api
-        .getMediaApi('ptzControl', {
+        .getMediaApi('setptzpos', {
           idx: this.did,
           no: this.cno,
-          command: PtzCMD.GET_PRESET,
-          para1: preset.preset_no,
-          para2: speed,
+          ptzh: preset.ptz_h,
+          ptzv: preset.ptz_v,
+          ptzz: preset.ipc_z,
         })
         .then((res) => {
-          if (!res) return;
-          console.log(res);
-        });
-    },
+          // if (res.success) {
+          //   // 设置云台状态
+          //   if ((cmd & 1) === 0) {
+          //     this.rotate = true;
+          //   } else {
+          //     this.command = 0;
+          //     this.rotate = false;
+          //   }
+          // }
+        });           
+    },  
     initPresetPolling() {
       if (!this.presetInterval && this.presetList.length > 1) {
         this.presetInterval = setInterval(() => {
