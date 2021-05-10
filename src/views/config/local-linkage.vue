@@ -330,6 +330,7 @@ export default {
       }
     },
     handleQueryData() {
+      this.pagination.current = 1;
       this.getTableData();
     },
     loadStationTree(options) {

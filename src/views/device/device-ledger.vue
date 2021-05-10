@@ -204,7 +204,6 @@ export default {
   },
   methods: {
     handleQueryData() {
-      console.log(this.pagination.current, 'aasfsdf');
       this.pagination.current = 1;
       this.getTableData();
     },

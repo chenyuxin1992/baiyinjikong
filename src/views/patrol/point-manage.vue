@@ -152,6 +152,7 @@ export default {
   },
   methods: {
     handleQueryData() {
+      this.pagination.current = 1;
       this.getTableData();
     },
     handleExportData() {
