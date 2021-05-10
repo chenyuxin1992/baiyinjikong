@@ -867,14 +867,16 @@ export default {
     },
     showMessage() {
       this.sysAlarm = '暂无告警';
-      this.$api
-        .getStatusApi()
-        .then((res) => {
-          //if(!res) return;
-          this.statusData = res;
-          console.log(this.statusData);
-        })
-        .finally();
+      // 无用的接口已注释
+      // this.$api
+      //   .getStatusApi()
+      //   .then((res) => {
+      //     console.log(res,'江南')
+      //     //if(!res) return;
+      //     this.statusData = res;
+      //     console.log(this.statusData);
+      //   })
+      //   .finally();
       this.messageModal = true;
     },
   },
