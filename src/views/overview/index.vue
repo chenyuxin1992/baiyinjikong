@@ -15,8 +15,8 @@
       <a-col class="sg-col" :span="6">
         <div class="sg-view sm">
           <div class="sg-view-title">
-            南京市电力公司集控站
-            <button
+            国网白银供电公司银城集控站
+            <!-- <button
               style="cursor: pointer; position: absolute; left: 20rem"
               @click="newPage()"
               v-bind:title="data2"
@@ -29,7 +29,7 @@
               v-bind:title="data1"
             >
               ✉
-            </button>
+            </button> -->
           </div>
           <div class="sg-view-content">
             <ul class="station">

@@ -1232,7 +1232,7 @@ export default {
       });
       Promise.all([
         this.$api.getBaseApi('patrolpoint', { substation: this.substationId }),
-        this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,4,5' }),
+        this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }),
       ]).then(([res1, res2]) => {
         console.log(res1, res2);
         if (res1 && res1.count) {
