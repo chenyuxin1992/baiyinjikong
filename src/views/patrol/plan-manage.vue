@@ -1248,7 +1248,7 @@ export default {
     getTableData() {
       this.tableLoad = true;
       this.$api
-        .getBaseApi('plantask_depth', {
+        .getBaseOrding('plantask_depth','-createtime', {
           page_num: this.pagination.current,
           page_size: this.pagination.pageSize,
           substation: this.stationId,

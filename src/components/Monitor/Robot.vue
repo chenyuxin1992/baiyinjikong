@@ -132,7 +132,10 @@ export default {
       });
     },
     async initVideo(url, type) {
-      const videoUrl = await this.loadVideo(url, type);
+      //const videoUrl = await this.loadVideo(url, type);
+      const videoUrl = `wss://${location.hostname}:8443/media/${url}.flv`;
+      console.log(videoUrl);
+
       if (flvjs.isSupported()) {
         // 切换流之前先切断流
         this.destroyVideo(type);
@@ -141,7 +144,7 @@ export default {
             ...this.baseOptions,
             ...this.options,
           });
-          this.lightPlayer.play(url, this.autoplay ? 1 : 0, this.options.currentTime || 0);
+          this.lightPlayer.play(videoUrl, this.autoplay ? 1 : 0, this.options.currentTime || 0);
         } else {
           this.infraredPlayer = new WasmPlayer(videoUrl, this.infraredId, this.callback, {
             ...this.baseOptions,
