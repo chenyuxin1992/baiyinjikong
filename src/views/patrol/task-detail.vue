@@ -181,6 +181,7 @@
                     detector: item.detector,
                     lightUrl: item.lightUrl,
                     infraredUrl: item.infraredUrl,
+                    autoplay: true,
                   }"
                 />
                 <sg-camera
@@ -190,9 +191,10 @@
                     url: item.url,
                     did: item.did,
                     cno: item.cno,
-                    preset: item.preset,
+                    //preset: item.preset,
                     detector: item.detector,
                     gesture: false,
+                    autoplay: true,
                   }"
                 />
               </swiper-slide>
@@ -223,14 +225,14 @@
                 :get-popup-container="(node) => node.parentNode"
               >
                 <a-button class="detector-map__popup" type="primary" size="small">
-                  {{ mapPopup ? '收起' : '展开' }}
+                  {{ mapPopup ? '收起' : '环境' }}
                 </a-button>
                 <template #content>
                   <ul class="detector-map__info">
-                    <li>巡视任务名称：{{ mapRobot.task_name || '-' }}</li>
+                    <!-- <li>巡视任务名称：{{ mapRobot.task_name || '-' }}</li>
                     <li>巡视设备名称：{{ mapRobot.detector_name || '-' }}</li>
                     <li>巡视点位名称：{{ mapRobot.patrolpoint_name || '-' }}</li>
-                    <li>最新巡视结果：{{ mapRobot.value_unit || '-' }}</li>
+                    <li>最新巡视结果：{{ mapRobot.value_unit || '-' }}</li> -->
                     <li>环境温度：{{ mapHost.temperature || '-' }}</li>
                     <li>环境湿度：{{ mapHost.humidity || '-' }}</li>
                     <li>风速：{{ mapHost.wind_speed || '-' }}</li>
@@ -350,7 +352,7 @@
               </template>
             </a-table>
           </a-tab-pane>
-          <a-tab-pane class="history-voice" key="voice" tab="声纹分析">
+          <!-- <a-tab-pane class="history-voice" key="voice" tab="声纹分析">
             <a-result
               v-if="pointItem && pointItem.file_type === 3"
               class="voice-result"
@@ -375,9 +377,8 @@
               </ul>
             </a-result>
             <a-empty v-else class="sg-empty" description="暂无声纹数据" />
-          </a-tab-pane>
-          <a-tab-pane class="history-video" key="video" tab="视频回放">
-            <!-- <sg-dplayer class="video-player" v-bind="{ title: 'pointItem.patrolpoint_name' }" /> -->
+          </a-tab-pane> -->
+          <!-- <a-tab-pane class="history-video" key="video" tab="视频回放">
             <sg-eplayer
               v-if="pointItem && pointItem.file_type === 4"
               class="video-player"
@@ -387,7 +388,7 @@
               }"
             />
             <a-empty v-else class="sg-empty" description="暂无视频数据" />
-          </a-tab-pane>
+          </a-tab-pane> -->
         </a-tabs>
       </div>
     </a-col>
@@ -523,7 +524,7 @@ export default {
         },
         {
           title: '操作',
-          fixed: 'right',
+          //fixed: 'right',
           align: 'center',
           width: 200,
           scopedSlots: { customRender: 'operation' },

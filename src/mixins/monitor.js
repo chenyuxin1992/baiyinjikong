@@ -291,7 +291,7 @@ export default {
               } else {
                 // 摄像机
                 this.$api
-                  .getBaseApi('detector', { substation: dataRef.id, dec_type__in: '0,2' })
+                  .getBaseApi('detector', { substation: dataRef.id, dec_type__in: '10' })
                   .then((res) => {
                     if (!res || !res.results) return resolve();
                     dataRef.children = res.results.map((item) => ({

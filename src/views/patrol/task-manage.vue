@@ -140,7 +140,7 @@ export default {
     tableColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
-        { title: '变电站', dataIndex: 'substation_name', align: 'center', width: 150 },
+        { title: '变电站', dataIndex: 'substation_name', align: 'center', width: 130 },
         { title: '任务名称', dataIndex: 'plantask_name', align: 'center', width: 150 },
         {
           title: '任务状态',
@@ -163,13 +163,14 @@ export default {
           title: '巡视进度',
           dataIndex: 'progress',
           align: 'center',
-          width: 150,
+          width: 120,
           scopedSlots: { customRender: 'progress' },
         },
         {
           title: '巡视结果',
           dataIndex: 'result',
           align: 'center',
+          width: 200,
           scopedSlots: { customRender: 'result' },
         },
         { title: '计划开始时间', dataIndex: 'plan_start_time', align: 'center', width: 150 },
@@ -406,6 +407,7 @@ export default {
               filter: [{ range: { start_time: { gte: timeStart, lte: timeEnd } } }],
             },
           },
+          sort: [{ start_time: { order: 'desc' } }],
           track_total_hits: true,
         })
         .then((res) => {
