@@ -412,7 +412,7 @@ import SgPmap from '@/components/Map/2DMap';
 import SgCell from '@/components/Table/Cell';
 import SgRobot from '@/components/Monitor/Robot';
 import SgCamera from '@/components/Monitor/Camera';
-import SgEplayer from '@/components/Monitor/EasyPlayer';
+// import SgEplayer from '@/components/Monitor/EasyPlayer';
 import ImageViewer from '@/components/ImageViewer';
 import {
   ALARM_STATUS,
@@ -433,7 +433,7 @@ export default {
     SgChart,
     SgRobot,
     SgCamera,
-    SgEplayer,
+    // SgEplayer,
     ImageViewer,
   },
   computed: {
@@ -893,7 +893,7 @@ export default {
                 确认
               </AButton>
             ),
-           description: (
+            description: (
               <ul>
                 <li>告警时间：{time}</li>
                 <li>告警点位：{patrolpoint_name}</li>
@@ -1268,7 +1268,7 @@ export default {
     getStationDetectorData() {
       this.$api.getBaseApi('plantask_depth', { id: this.plantaskId }).then((res) => {
         console.log(res.results[0]);
-        //if (!res || !res.count) return;
+        // if (!res || !res.count) return;
         const { substation, patrolhost } = res.results[0];
         this.mapHost = patrolhost;
         if (substation.map_path) {
@@ -1279,7 +1279,7 @@ export default {
         this.$api.getBaseApi('patrolpoint', { substation: this.substationId }),
         this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }),
       ]).then(([res1, res2]) => {
-        console.log(res1, res2);
+        console.log([res1, res2], '黑猫警长');
         if (res1 && res1.count) {
           this.mapPoints = res1.results;
         }

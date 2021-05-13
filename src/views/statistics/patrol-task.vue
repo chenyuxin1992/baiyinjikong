@@ -138,6 +138,7 @@ export default {
               (acc, key) => ((acc[key] = this.$random(10)), acc),
               {}
             );
+
             return { name: `变电站${index + 1}`, ...dataObj };
           }),
         },
@@ -240,6 +241,7 @@ export default {
             {}
           );
           if (status_count.buckets.length > 0) {
+            console.log(status_count.buckets, '天外');
             status_count.buckets.forEach((item) => {
               if (item.key > 0) taskStateMap[item.key] = item.doc_count;
             });
@@ -312,15 +314,29 @@ export default {
                   taskStateMap,
                   { substation_id: key }
                 );
+
                 type_count.buckets.forEach((item) => (taskTypeItem[item.key] = item.doc_count));
+
                 status_count.buckets.forEach((item) => (taskStateItem[item.key] = item.doc_count));
+
                 taskTypeData.push(taskTypeItem);
+
                 taskStateData.push(taskStateItem);
               }
             }
-            this.taskTypeStation.dataset.source = taskTypeData;
-            this.taskStateStation.dataset.source = taskStateData;
-            // console.log(taskTypeData, taskStateData);
+            // 巡视任务状态站点统计超过10个截取前十个，小于10个显示所有
+            if (taskStateData.length <= 10 && taskStateData != '') {
+              this.taskStateStation.dataset.source = taskStateData;
+            } else {
+              let before10taskStation = taskStateData.slice(0, 10);
+              this.taskStateStation.dataset.source = before10taskStation;
+            }
+            if (taskTypeData.length <= 10 && taskTypeData != '') {
+              this.taskTypeStation.dataset.source = taskTypeData;
+            } else {
+              let before10taskTypeData = taskTypeData.slice(0, 10);
+              this.taskTypeStation.dataset.source = before10taskTypeData;
+            }
           });
       });
     },

@@ -256,7 +256,14 @@ export default {
           const dataItem = cameraData[i];
           await getCameraDeployItem(station, dataItem);
         }
-        this.cameraDeploy.dataset.source = cameraData;
+        console.log(cameraData, 12580);
+        //摄像机部署统计超过10个截取前十个，小于10个显示所有
+        if (cameraData.length <= 10 && cameraData != '') {
+          this.cameraDeploy.dataset.source = cameraData;
+        } else {
+          let before10cameraData = cameraData.slice(0, 10);
+          this.cameraDeploy.dataset.source = before10cameraData;
+        }
       });
     },
     getCameraOnlineData() {

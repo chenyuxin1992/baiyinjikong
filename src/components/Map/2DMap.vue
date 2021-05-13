@@ -222,14 +222,17 @@ export default {
             }
           }
         }
+        console.log(this.robots, '阿斯顿马丁');
         // 添加巡视机器人
         if (this.robots) {
+          console.log(this.robots, '葫芦娃');
           for (const robot of this.robots) {
             const { coordinate_pixel, coordinate_pixels } = robot;
             if (coordinate_pixel) {
               this.addRobot(robot);
             }
             if (coordinate_pixels) {
+              console.log(coordinate_pixels, 'aaaaaaa');
               this.addRobotPath(robot);
             }
           }
@@ -316,12 +319,15 @@ export default {
       });
     },
     addRobotPath(pixels, type = 'default', immediate = false) {
+      console.log(pixels, '火拳艾斯');
       return new Promise((resolve) => {
-        const points = pixels.split(',z,a,').reduce((acc, pixel) => {
+        const points = pixels.coordinate_pixels.split(',z,a,').reduce((acc, pixel) => {
+          console.log(acc, '虎鲸');
           const { x, y } = this.pixel2Coord(pixel);
           acc = acc.concat(x, y);
           return acc;
         }, []);
+        console.log(points, '小企鹅打老虎屁股');
         const strokeColor = type === 'default' ? '#aaa' : '#008c74';
         const path = new Konva.Line({
           points: points,
@@ -336,7 +342,9 @@ export default {
       });
     },
     pixel2Coord(pixel) {
+      // console.log(pixel,'大白鲨')
       const [x, y] = pixel.split(',');
+      // console.log([x,y],'海狮受')
       const coordX = Math.round(x * this.scale * 100) / 100;
       const coordY = Math.round(y * this.scale * 100) / 100;
       return { x: coordX, y: coordY };
