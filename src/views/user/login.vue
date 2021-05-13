@@ -35,7 +35,6 @@
             size="large"
             placeholder="请输入密码"
             :max-length="20"
-            @keyup.enter.native="handleLogin"
           >
             <a-icon slot="prefix" type="lock" />
           </a-input-password>

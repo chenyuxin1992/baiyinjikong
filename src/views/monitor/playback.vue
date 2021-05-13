@@ -467,9 +467,9 @@ export default {
     // 视频录像下载
     handleDownloadRecord(video) {
       if (video) {
-        window.open(`https://${location.hostname}:8443/media/index/api/downloadMp4?devidx=${this.deviceId}&channelno=${this.channelNo}&filename=${video.name}`);
+        window.open(`https://${location.hostname}:8443/media/api/v2/downloadMp4?devidx=${this.deviceId}&channelno=${this.channelNo}&filename=${video.name}`);
         // FileSaver.saveAs(
-        //   `https://${location.hostname}:8443/media/index/api/downloadMp4?devidx=${this.deviceId}&channelno=${this.channelNo}&filename=${video.name}`,
+        //   `https://${location.hostname}:8443/media/api/v2/downloadMp4?devidx=${this.deviceId}&channelno=${this.channelNo}&filename=${video.name}`,
         //   '任务巡视报告.docx'
         // );     
         // this.$api

@@ -36,7 +36,7 @@ const getTaskApi = (action, params = {}) =>
 const postTaskApi = (action, data = {}, config = {}) =>
   axios.post(`/base/task/`, { __: action, ...data }, config);
 // 视频数据
-const getMediaApi = (action, params = {}) => axios.get(`/media/index/api/${action}`, { params });
+const getMediaApi = (action, params = {}) => axios.get(`/media/api/v2/${action}`, { params });
 // 设备数据
 const postDeviceApi = (data, config = {}) => axios.post(`/base/device/`, data, config);
 // 机器人控制

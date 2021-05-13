@@ -117,7 +117,7 @@ export default {
         .then((res) => {
           //if (!res) return;
           this.$emit('screenshot', {
-            image: `https://${location.hostname}:8443/media/index/api/getSnap?url=http%3A%2F%2F${
+            image: `https://${location.hostname}:8443/media/api/v2/getSnap?url=http%3A%2F%2F${
               location.hostname
             }%3A10080%2F${this.did}%2F${
               this.stream

@@ -500,17 +500,17 @@ export default {
     pointColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
-        { title: '部件', dataIndex: 'component_name', align: 'center', width: 150 },
-        { title: '巡视内容', dataIndex: 'patrolpoint_name', align: 'center', width: 150 },
-        { title: '巡视结论', dataIndex: 'conclusion', align: 'center', width: 150 },
+        { title: '部件', dataIndex: 'component_name', align: 'center', width: 100 ,ellipsis: true},
+        { title: '巡视内容', dataIndex: 'patrolpoint_name', align: 'center', width: 110 ,ellipsis: true},
+        { title: '巡视结论', dataIndex: 'conclusion', align: 'center', width: 110 },
         { title: '识别结果', dataIndex: 'value_disp', align: 'center', width: 100 },
-        { title: '原始值', dataIndex: 'value', align: 'center', width: 100 },
-        { title: '正常值', dataIndex: 'normal_value', align: 'center', width: 100 },
+        { title: '原始值', dataIndex: 'value', align: 'center', width: 90 },
+        { title: '正常值', dataIndex: 'normal_value', align: 'center', width: 90 },
         {
           title: '修正值',
           dataIndex: 'check_value',
           align: 'center',
-          width: 150,
+          width: 120,
           scopedSlots: { customRender: 'checkvalue' },
         },
         { title: '审核状态', dataIndex: 'checkState', align: 'center', width: 100 },
@@ -518,7 +518,7 @@ export default {
           title: '点位来源',
           dataIndex: 'dataSource',
           align: 'center',
-          width: 150,
+          width: 120,
           filterMultiple: false,
           filters: this.dataSources,
         },
@@ -541,7 +541,7 @@ export default {
       return {
         fixed: true,
         type: 'radio',
-        columnWidth: 50,
+        columnWidth: 20,
         columnTitle: (
           <AButton type="link" onClick={clearSelection}>
             清空
@@ -655,6 +655,7 @@ export default {
       alarmLevel: undefined,
       alarmData: [],
       alarmPage: { total: 0, current: 1, pageSize: 5, size: 'small' },
+      deviceList: [], 
     };
   },
   created() {
@@ -834,6 +835,7 @@ export default {
       }
     },
     handleShowViewer(index) {
+      console.log('picture', index);
       this.imageIndex = index;
       this.imageViewer = true;
     },
@@ -867,9 +869,15 @@ export default {
         }
         if (action === 'task_station_result' && this.taskId === item.task_patrolled_id) {
           const { detector_id } = item;
-          //if (this.deviceId === detector_id) {
-          this.getPointTableData(this.deviceId);
-          //}
+          if(this.deviceList.indexOf(detector_id) == -1) {
+            this.getDeviceTableData();
+          }
+          if (this.deviceId === detector_id) {
+            this.getPointTableData(this.deviceId);
+          } 
+          else if(!this.deviceId) {
+            this.getPointTableData();
+          }
         }
         if (action === 'task_station_alarm' && this.taskId === item.task_patrolled_id) {
           const { time, content, value_unit, alarm_type, alarm_level, patrolpoint_name } = item;
@@ -1002,7 +1010,7 @@ export default {
           });
       }, 5000);
     },
-    getDeviceTableData() {
+    getDeviceTableData111() {
       this.deviceLoad = true;
       let params = [{ match: { task_id: this.taskId } }];
       this.checkExcept && params.push({ match: { status: 2 } }, { match: { status: 4 } });
@@ -1034,6 +1042,43 @@ export default {
           this.deviceLoad = false;
         });
     },
+    getDeviceTableData() {
+      this.deviceLoad = true;
+      let params = [{ match: { task_id: this.taskId } }];
+      //this.checkExcept && params.push({ match: { status: 2 } }, { match: { status: 4 } });
+      this.deviceName && params.push({ match: { device_name: this.deviceName } });
+      this.$api
+        .postHistoryApi('historyitems', '_search', {
+          // from: this.devicePage.pageSize * (this.devicePage.current - 1),
+          // size: this.devicePage.pageSize,
+          query: { bool: { must: params } },
+          collapse: {field: 'device_id'},
+          // _source: { excludes: ['image'] },
+          //track_total_hits: true,
+        })
+        .then((res) => {
+          //if (!res || !res.hits.total.value) return;
+          console.log('hahahhaaa',res);
+          this.deviceList = [];
+          this.deviceData = res.hits.hits.map((item, index) => {
+            const source = item._source;
+            const tableIndex = this.devicePage.pageSize * (this.devicePage.current - 1) + index + 1;
+            this.deviceList.push(source.device_id);
+            console.log('deviceList', this.deviceList);
+            return {
+              ...source,
+              id: item._id,
+              index: tableIndex,
+              taskState: TASK_STATUS[source.status] || '-',
+              conclusion: source.valid === 1 ? '识别正常' : '识别异常',
+            };
+          });
+          this.devicePage.total = this.deviceList.length;
+        })
+        .finally(() => {
+          this.deviceLoad = false;
+        });
+    },        
     getPointTableData(deviceId) {
       this.pointLoad = true;
       let mustnotParams = [];

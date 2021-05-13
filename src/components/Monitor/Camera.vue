@@ -159,17 +159,18 @@ export default {
   methods: {
     handleScreenshot() {
       this.$api
-        .getMediaApi('getSnap', {
-          // devidx: this.did,
-          // channelno: this.cno,
-          url: `http://${location.hostname}:10080/${this.did}/${this.cno}.flv`,
-          timeout_sec: 10,
-          expire_sec: 5,
+        .getMediaApi('getpicture', {
+          devidx: this.did,
+          channelno: this.cno,
+          // url: `http://${location.hostname}:10080/${this.did}/${this.cno}.flv`,
+          // timeout_sec: 10,
+          // expire_sec: 5,
         })
         .then((res) => {
           if (!res) return;
+          console.log(res);
           this.$emit('screenshot', {
-            image: `https://${location.hostname}:8443/media/index/api/getSnap?url=http%3A%2F%2F${
+            image: `https://${location.hostname}:8443/media/api/v2/getSnap?url=http%3A%2F%2F${
               location.hostname
             }%3A10080%2F${this.did}%2F${
               this.cno
