@@ -9,14 +9,14 @@ window.BMapCFG = {
   tiles_road_dir: '', // 地图路网文件路径 bmap/tiles_road/
   tiles_satellite_dir: '', // 卫星地图文件路径 bmap/tiles_satellite/
 };
-(function () {
-  // window.BMap = window.BMap || {};
-  // window.BMap.apiLoad = function () {
-  //   delete window.BMap.apiLoad;
-  // };
-  const script = document.createElement('script')
-  script.type = 'text/javascript'
-  script.src = './bmap/bmap.min.js'
-  document.head.appendChild(script)
-  // document.write(`<script type="text/javascript" src='./bmap/bmap.min.js'></script>`);
-})();
+// (function () {
+//   // window.BMap = window.BMap || {};
+//   // window.BMap.apiLoad = function () {
+//   //   delete window.BMap.apiLoad;
+//   // };
+//   const script = document.createElement('script')
+//   script.type = 'text/javascript'
+//   script.src = './bmap/bmap.min.js'
+//   document.head.appendChild(script)
+//   // document.write(`<script type="text/javascript" src='./bmap/bmap.min.js'></script>`);
+// })();

@@ -706,6 +706,8 @@ export default {
     };
   },
   created() {
+    console.log(this.planForm.plantime, '艾迪');
+    console.log(this.$moment().format('YYYY-MM-DD HH:mm:ss'), '迪迦');
     this.getSelectData();
     this.getTableData();
   },
@@ -955,6 +957,7 @@ export default {
                     : device_level === 4
                     ? devices.toString()
                     : '',
+
                 plantime:
                   this.planType === 0 ? this.$moment(plantime).format('YYYY-MM-DD HH:mm:ss') : null,
                 createtime: this.$moment(createtime).format('YYYY-MM-DD HH:mm:ss'),
@@ -996,6 +999,7 @@ export default {
                   data: [planTask],
                 })
                 .then(() => {
+                  console.log(planTask, '云淡风轻');
                   this.$message.success('巡视方案提交成功！');
                   this.$refs.planForm.resetFields();
                   this.planModal = false;
@@ -1248,7 +1252,7 @@ export default {
     getTableData() {
       this.tableLoad = true;
       this.$api
-        .getBaseOrding('plantask_depth','-createtime', {
+        .getBaseOrding('plantask_depth', '-createtime', {
           page_num: this.pagination.current,
           page_size: this.pagination.pageSize,
           substation: this.stationId,

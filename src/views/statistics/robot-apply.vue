@@ -232,6 +232,7 @@ export default {
       const timeRange = this.timeRange
         .map((date) => this.$moment(date).format('YYYY-MM-DD HH:mm:ss'))
         .join(',');
+      let robotMaintainnew = [];
       const getRobotMaintainItem = (station, dataItem) => {
         return new Promise((resolve, reject) => {
           this.$api
@@ -240,8 +241,18 @@ export default {
               datetime__range: timeRange,
             })
             .then((res) => {
+              // console.log(res,'士大夫')
               if (!res) return resolve();
+              // if(res.count > 0) {
+              //   res.results.forEach((item) => {
+              //     const { status } = item;
+              //     if (!isNaN(dataItem[status])) dataItem[status]++;
+              //     robotMaintainnew.push(dataItem)
+              //     console.log(robotMaintainnew,'天生我材必有用')
+              //   })
+              // }
               dataItem[1] = res.count;
+              // console.log(dataItem,'飞机到了')
               resolve();
             })
             .catch((err) => reject(err));
@@ -249,34 +260,37 @@ export default {
       };
       this.$api.getBaseApi('substation').then(async (res) => {
         if (!res || !res.results) return;
+        // console.log(res,'飞火流星')
         const { count, results } = res;
+        // console.log({count,results},'我爱你')
         let robotData = results.map((item, key) => [item.name, 0, item.id]);
         for (let i = 0; i < count; i++) {
           const station = results[i];
           let robotItem = robotData[i];
           await getRobotMaintainItem(station, robotItem);
         }
-
-        //机器人维护统计超过10个截取前十个，小于10个显示所有
         if (robotData.length <= 10 && robotData != '') {
           this.robotMaintain.dataset.source = robotData;
         } else {
-          let befor10robotMain = robotData.slice(0, 10);
-          this.robotMaintain.dataset.source = befor10robotMain;
+          let before10robotData = robotData.slice(0, 10);
+          this.robotMaintain.dataset.source = before10robotData;
         }
       });
     },
     getRobotConditionData() {
+      let robotStation = [];
       const getRobotConditionItem = (station, dataItem) => {
         return new Promise((resolve, reject) => {
           this.$api
             .getBaseApi('detector', { substation: station.id, dec_type__in: '1,2,3' })
             .then((res) => {
               if (!res) return resolve();
+
               if (res.count > 0) {
                 res.results.forEach((item) => {
                   const { status } = item;
                   if (!isNaN(dataItem[status])) dataItem[status]++;
+                  robotStation.push(dataItem);
                 });
               }
               resolve();
@@ -287,25 +301,28 @@ export default {
       this.$api.getBaseApi('substation').then(async (res) => {
         if (!res || !res.results) return;
         const { count, results } = res;
+        //  console.log(res,'豆腐干')
         const dataItem = Object.keys(ROBOTDETECTOR_STATUS).reduce(
           (acc, key) => ((acc[key] = 0), acc),
           {}
         );
+
         let robotData = results.map((item) => ({
           name: item.name,
           ...dataItem,
           substation_id: item.id,
         }));
+
         for (let i = 0; i < count; i++) {
           const station = results[i];
           const robotItem = robotData[i];
           await getRobotConditionItem(station, robotItem);
         }
-        //机器人工况统计超过10个截取前十个，小于10个显示所有
-        if (robotData.length <= 10 && robotData != '') {
-          this.robotCondition.dataset.source = robotData;
+
+        if (robotStation.length <= 10 && robotStation != '') {
+          this.robotCondition.dataset.source = robotStation;
         } else {
-          let before10robotData = robotData.slice(0, 10);
+          let before10robotData = robotStation.slice(0, 10);
           this.robotCondition.dataset.source = before10robotData;
         }
       });
