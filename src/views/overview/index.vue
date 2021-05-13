@@ -794,7 +794,28 @@ export default {
                 taskStateData.push(taskStateItem);
               }
             }
-            this.taskStatis.dataset = [{ source: taskTypeData }, { source: taskStateData }];
+            console.log(taskTypeData, '天马流星拳');
+            console.log(taskStateData, '螺旋丸');
+            // 巡视任务统计类型超过10个截取前十个，小于10个显示所有
+            if (taskTypeData <= 10 && taskTypeData != '') {
+              this.taskStatis.dataset = [{ source: taskTypeData }, { source: taskStateData }];
+            } else {
+              let before10taskTypeData = taskTypeData.slice(0, 10);
+              this.taskStatis.dataset = [
+                { source: before10taskTypeData },
+                { source: taskStateData },
+              ];
+            }
+            // 巡视任务统计状态超过10个截取前十个，小于10个显示所有
+            if (taskStateData <= 10 && taskStateData != '') {
+              this.taskStatis.dataset = [{ source: taskTypeData }, { source: taskStateData }];
+            } else {
+              let before10taskStateData = taskStateData.slice(0, 10);
+              this.taskStatis.dataset = [
+                { source: taskTypeData },
+                { source: before10taskStateData },
+              ];
+            }
           })
           .finally(() => {
             this.taskStatis.series = Object.entries(TASK_PATROL_TYPE).map(([key, val]) => ({

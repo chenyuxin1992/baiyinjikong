@@ -282,7 +282,13 @@ export default {
           await getAlarmLevelItem(station, alarmLevelItem);
           alarmLevelSource.push(alarmLevelItem);
         }
-        this.alarmLevel.dataset.source = alarmLevelSource;
+        //告警等级统计超过10个截取前十个，小于10个显示所有
+        if (alarmLevelSource.length <= 10 && alarmLevelSource != '') {
+          this.alarmLevel.dataset.source = alarmLevelSource;
+        } else {
+          let before10alarmLevelSource = alarmLevelSource.slice(0, 10);
+          this.alarmLevel.dataset.source = before10alarmLevelSource;
+        }
       });
     },
     getAlarmStateData(timeStart, timeEnd) {
@@ -348,7 +354,14 @@ export default {
               key: item.key,
             });
           });
-          this.alarmDevice.dataset.source = source;
+
+          // 告警设备统计超过10个截取前十个，小于10个显示所有
+          if (source.length <= 10 && source != '') {
+            this.alarmDevice.dataset.source = source;
+          } else {
+            let before10alarmDeviceSource = source.slice(0, 10);
+            this.alarmDevice.dataset.source = before10alarmDeviceSource;
+          }
         });
     },
   },

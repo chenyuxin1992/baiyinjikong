@@ -256,7 +256,14 @@ export default {
           let robotItem = robotData[i];
           await getRobotMaintainItem(station, robotItem);
         }
-        this.robotMaintain.dataset.source = robotData;
+
+        //机器人维护统计超过10个截取前十个，小于10个显示所有
+        if (robotData.length <= 10 && robotData != '') {
+          this.robotMaintain.dataset.source = robotData;
+        } else {
+          let befor10robotMain = robotData.slice(0, 10);
+          this.robotMaintain.dataset.source = befor10robotMain;
+        }
       });
     },
     getRobotConditionData() {
@@ -294,7 +301,13 @@ export default {
           const robotItem = robotData[i];
           await getRobotConditionItem(station, robotItem);
         }
-        this.robotCondition.dataset.source = robotData;
+        //机器人工况统计超过10个截取前十个，小于10个显示所有
+        if (robotData.length <= 10 && robotData != '') {
+          this.robotCondition.dataset.source = robotData;
+        } else {
+          let before10robotData = robotData.slice(0, 10);
+          this.robotCondition.dataset.source = before10robotData;
+        }
       });
     },
   },

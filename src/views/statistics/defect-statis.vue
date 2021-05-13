@@ -223,6 +223,7 @@ export default {
           this.$random(10),
           this.$random(5),
         ]);
+        console.log(this.defectAlarm.dataset.source, '飞火流星');
       });
     },
     getDefectLevelData(timeStart, timeEnd) {
@@ -380,9 +381,22 @@ export default {
           defectStatisSource.push(defectStatisItem);
           defectCountSource.push(defectCountItem);
         }
+        console.log(defectCountSource, '666666666666666666');
 
-        this.defectStatis.dataset.source = defectStatisSource;
-        this.defectAlarm.dataset.source = defectCountSource;
+        // 缺陷汇总统计超过10个截取前十个，小于10个显示所有
+        if (defectStatisSource.length <= 10 && defectStatisSource != '') {
+          this.defectStatis.dataset.source = defectStatisSource;
+        } else {
+          let before10defectStatisSource = defectStatisSource.slice(0, 10);
+          this.defectStatis.dataset.source = before10defectStatisSource;
+        }
+        if (defectCountSource.length <= 10 && defectCountSource != '') {
+          this.defectAlarm.dataset.source = defectCountSource;
+        } else {
+          console.log('一蓑烟雨任平生');
+          let before10defectCountSource = defectCountSource.slice(0, 10);
+          this.defectAlarm.dataset.source = before10defectCountSource;
+        }
       });
     },
   },

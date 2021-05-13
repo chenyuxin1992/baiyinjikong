@@ -331,7 +331,12 @@ export default {
               let before10taskStation = taskStateData.slice(0, 10);
               this.taskStateStation.dataset.source = before10taskStation;
             }
-            this.taskTypeStation.dataset.source = taskTypeData;
+            if (taskTypeData.length <= 10 && taskTypeData != '') {
+              this.taskTypeStation.dataset.source = taskTypeData;
+            } else {
+              let before10taskTypeData = taskTypeData.slice(0, 10);
+              this.taskTypeStation.dataset.source = before10taskTypeData;
+            }
           });
       });
     },
