@@ -1267,7 +1267,6 @@ export default {
     },
     getStationDetectorData() {
       this.$api.getBaseApi('plantask_depth', { id: this.plantaskId }).then((res) => {
-        console.log(res.results[0]);
         // if (!res || !res.count) return;
         const { substation, patrolhost } = res.results[0];
         this.mapHost = patrolhost;
@@ -1275,18 +1274,23 @@ export default {
           this.mapUrl = `https://${location.hostname}:8443/html/shares/${substation.map_path}`;
         }
       });
-      Promise.all([
-        this.$api.getBaseApi('patrolpoint', { substation: this.substationId }),
-        this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }),
-      ]).then(([res1, res2]) => {
-        console.log([res1, res2], '黑猫警长');
-        if (res1 && res1.count) {
-          this.mapPoints = res1.results;
+      this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }).then( (res) => {
+        if (res && res.count > 0) {
+          this.mapRobots = res.results;
         }
-        if (res2 && res2.count) {
-          this.mapRobots = res2.results;
-        }
-      });
+      })
+      // Promise.all([
+      //   this.$api.getBaseApi('patrolpoint', { substation: this.substationId }),
+      //   this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }),
+      // ]).then(([res1, res2]) => {
+      //   console.log([res1, res2], '黑猫警长');
+      //   if (res1 && res1.count) {
+      //     this.mapPoints = res1.results;
+      //   }
+      //   if (res2 && res2.count) {
+      //     this.mapRobots = res2.results;
+      //   }
+      // });
     },
   },
 };

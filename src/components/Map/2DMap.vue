@@ -6,7 +6,6 @@
 
 <script>
 import Konva from 'konva';
-
 export default {
   name: 'PlaneMap',
   props: {
@@ -31,15 +30,15 @@ export default {
       },
     },
   },
-  watch: {
-    mapUrl(url) {
-      if (this.image) {
-        this.image.destroy();
-        this.image = null;
-      }
-      this.initMap(url);
-    },
-  },
+  // watch: {
+  //   mapUrl(url) {
+  //     if (this.image) {
+  //       this.image.destroy();
+  //       this.image = null;
+  //     }
+  //     this.initMap(url);
+  //   },
+  // },
   data() {
     return {
       loading: false,
@@ -51,6 +50,7 @@ export default {
       layer: null,
       image: null,
       baseLayer: null,
+      mapLayer:null,
       robotLayer: null,
       rectArea: null,
       rectPrev: null,
@@ -60,13 +60,14 @@ export default {
       stageH: 0,
       stageX: 0,
       stageY: 0,
+      scale_x: 1,
+      scale_y: 1,
     };
   },
   create() {
     this.onWebsocketPush();
   },
   mounted() {
-    this.initStage();
     if (this.mapUrl) {
       this.initMap(this.mapUrl);
     }
@@ -126,120 +127,131 @@ export default {
         offsetY: this.stageY,
       });
     },
-    initMap(url) {
-      this.loading = true;
-      Konva.Image.fromURL(url, (image) => {
-        const imageW = image.width();
-        const imageH = image.height();
-        const imageR = Math.round((imageW / imageH) * 100) / 100;
-        const stageR = Math.round((this.stageW / this.stageH) * 100) / 100;
-        if (stageR >= imageR) {
-          // 页面宽高比大于图片时纵向完整显示
-          this.scale = Math.round((this.stageH / imageH) * 100) / 100;
-        } else {
-          // 页面宽高比小于图片时横向完整显示
-          this.scale = Math.round((this.stageW / imageW) * 100) / 100;
-        }
-        this.stage.scale({ x: this.scale, y: this.scale });
-        const offsetX = Math.round(imageW - this.stageW) / 2;
-        const offsetY = Math.round(imageH - this.stageH) / 2;
-        if (!this.baseLayer) {
-          this.baseLayer = new Konva.Layer({
-            listening: true,
-            offsetX: offsetX,
-            offsetY: offsetY,
-          });
-          this.robotLayer = this.baseLayer.clone();
-          this.stage.add(this.baseLayer);
-          this.stage.add(this.robotLayer);
-        }
-        this.baseLayer.on('mousedown', () => {
-          if (!this.mapDraw) return;
-          const coord = this.stage.getPointerPosition();
-          console.log('mousedown: ', coord);
-          this.rectCoord.x1 = Math.round(coord.x / this.scale);
-          this.rectCoord.y1 = Math.round(coord.y / this.scale);
-          if (this.rectArea) {
-            this.rectArea.destroy();
-            this.rectArea = null;
-          }
-          this.drawing = true;
-        });
-        this.baseLayer.on('mousemove', () => {
-          if (!this.drawing) return;
-          const coord = this.stage.getPointerPosition();
-          const coordX = Math.round(coord.x / this.scale);
-          const coordY = Math.round(coord.y / this.scale);
-          const rectX = coordX > this.rectCoord.x1 ? this.rectCoord.x1 : coordX;
-          const rectY = coordY > this.rectCoord.y1 ? this.rectCoord.y1 : coordY;
-          const rectW = Math.abs(coordX - this.rectCoord.x1);
-          const rectH = Math.abs(coordY - this.rectCoord.y1);
-          if (!this.rectArea) {
-            this.rectArea = new Konva.Rect({
-              x: rectX,
-              y: rectY,
-              width: rectW,
-              height: rectH,
-              stroke: 'red',
-              strokeWidth: 5,
-              listening: true,
-            });
-            this.baseLayer.add(this.rectArea);
-          }
-          this.rectArea.setAttrs({ x: rectX, y: rectY, width: rectW, height: rectH });
+    initMap(url) { 
+      this.loading = true;     
+      this.initStage();
+      if (url) {
+        this.baseLayer = new Konva.Layer();
+        Konva.Image.fromURL(url, (image) => {
+          const imageW = image.width();
+          const imageH = image.height();
+          this.scale_x = Math.round((this.stageW / imageW) * 100) / 100;
+          this.scale_y = Math.round((this.stageH / imageH) * 100) / 100;
+          //this.stage.scale({ x: scale_x, y: scale_y });
+          image.setAttrs({
+            width: this.stageW,
+            height: this.stageH,
+          })
+          this.image = image;
+          this.baseLayer.add(this.image);
           this.baseLayer.batchDraw();
-        });
-        this.baseLayer.on('mouseup', () => {
-          if (!this.drawing) return;
-          const coord = this.stage.getPointerPosition();
-          console.log('mouseup: ', coord);
-          const { x1, y1 } = this.rectCoord;
-          const coordX = Math.round(coord.x / this.scale);
-          const coordY = Math.round(coord.y / this.scale);
-          if (x1 > coordX) {
-            this.rectCoord.x1 = coordX;
-            this.rectCoord.x2 = x1;
-          } else {
-            this.rectCoord.x2 = coordX;
-          }
-          if (y1 > coordY) {
-            this.rectCoord.y1 = coordY;
-            this.rectCoord.y2 = y1;
-          } else {
-            this.rectCoord.y2 = coordY;
-          }
-          console.log(this.rectCoord);
-          this.$emit('areaSelect', this.rectCoord);
-          this.drawing = false;
-        });
-        this.image = image;
-        this.baseLayer.add(this.image);
-        // 添加巡视点位
-        if (this.points) {
-          for (const point of this.points) {
-            if (point.map_point) {
-              this.addPoint(point);
-            }
-          }
+        })
+        this.stage.add(this.baseLayer);
+      }
+      //------添加巡视机器人-------
+      if (this.robots.length > 0) {
+        
+        for (const robot of this.robots) {
+            this.addRobot(robot);
+            //this.addRobotPath(robot);
         }
-        console.log(this.robots, '阿斯顿马丁');
-        // 添加巡视机器人
-        if (this.robots) {
-          console.log(this.robots, '葫芦娃');
-          for (const robot of this.robots) {
-            const { coordinate_pixel, coordinate_pixels } = robot;
-            if (coordinate_pixel) {
-              this.addRobot(robot);
-            }
-            if (coordinate_pixels) {
-              console.log(coordinate_pixels, 'aaaaaaa');
-              this.addRobotPath(robot);
-            }
-          }
-        }
-        this.stage.batchDraw();
-        this.loading = false;
-      });
+      }
+      this.loading = false;
+      // Konva.Image.fromURL(url, (image) => {
+      //   const imageW = image.width();
+      //   const imageH = image.height();
+      //   const imageR = Math.round((imageW / imageH) * 100) / 100;
+      //   const stageR = Math.round((this.stageW / this.stageH) * 100) / 100;
+      //   if (stageR >= imageR) {
+      //     // 页面宽高比大于图片时纵向完整显示
+      //     this.scale = Math.round((this.stageH / imageH) * 100) / 100;
+      //   } else {
+      //     // 页面宽高比小于图片时横向完整显示
+      //     this.scale = Math.round((this.stageW / imageW) * 100) / 100;
+      //   }
+      //   this.stage.scale({ x: this.scale, y: this.scale });
+      //   const offsetX = Math.round(imageW - this.stageW) / 2;
+      //   const offsetY = Math.round(imageH - this.stageH) / 2;
+      //   if (!this.baseLayer) {
+      //     this.baseLayer = new Konva.Layer({
+      //       listening: true,
+      //       offsetX: offsetX,
+      //       offsetY: offsetY,
+      //     });
+      //     this.robotLayer = this.baseLayer.clone();
+      //     this.stage.add(this.baseLayer);
+      //     this.stage.add(this.robotLayer);
+      //   }
+      //   this.baseLayer.on('mousedown', () => {
+      //     if (!this.mapDraw) return;
+      //     const coord = this.stage.getPointerPosition();
+      //     console.log('mousedown: ', coord);
+      //     this.rectCoord.x1 = Math.round(coord.x / this.scale);
+      //     this.rectCoord.y1 = Math.round(coord.y / this.scale);
+      //     if (this.rectArea) {
+      //       this.rectArea.destroy();
+      //       this.rectArea = null;
+      //     }
+      //     this.drawing = true;
+      //   });
+      //   this.baseLayer.on('mousemove', () => {
+      //     if (!this.drawing) return;
+      //     const coord = this.stage.getPointerPosition();
+      //     const coordX = Math.round(coord.x / this.scale);
+      //     const coordY = Math.round(coord.y / this.scale);
+      //     const rectX = coordX > this.rectCoord.x1 ? this.rectCoord.x1 : coordX;
+      //     const rectY = coordY > this.rectCoord.y1 ? this.rectCoord.y1 : coordY;
+      //     const rectW = Math.abs(coordX - this.rectCoord.x1);
+      //     const rectH = Math.abs(coordY - this.rectCoord.y1);
+      //     if (!this.rectArea) {
+      //       this.rectArea = new Konva.Rect({
+      //         x: rectX,
+      //         y: rectY,
+      //         width: rectW,
+      //         height: rectH,
+      //         stroke: 'red',
+      //         strokeWidth: 5,
+      //         listening: true,
+      //       });
+      //       this.baseLayer.add(this.rectArea);
+      //     }
+      //     this.rectArea.setAttrs({ x: rectX, y: rectY, width: rectW, height: rectH });
+      //     this.baseLayer.batchDraw();
+      //   });
+      //   this.baseLayer.on('mouseup', () => {
+      //     if (!this.drawing) return;
+      //     const coord = this.stage.getPointerPosition();
+      //     console.log('mouseup: ', coord);
+      //     const { x1, y1 } = this.rectCoord;
+      //     const coordX = Math.round(coord.x / this.scale);
+      //     const coordY = Math.round(coord.y / this.scale);
+      //     if (x1 > coordX) {
+      //       this.rectCoord.x1 = coordX;
+      //       this.rectCoord.x2 = x1;
+      //     } else {
+      //       this.rectCoord.x2 = coordX;
+      //     }
+      //     if (y1 > coordY) {
+      //       this.rectCoord.y1 = coordY;
+      //       this.rectCoord.y2 = y1;
+      //     } else {
+      //       this.rectCoord.y2 = coordY;
+      //     }
+      //     console.log(this.rectCoord);
+      //     this.$emit('areaSelect', this.rectCoord);
+      //     this.drawing = false;
+      //   });
+      //   this.image = image;
+      //   this.baseLayer.add(this.image);
+      //   // 添加巡视点位
+      //   if (this.points) {
+      //     for (const point of this.points) {
+      //       if (point.map_point) {
+      //         this.addPoint(point);
+      //       }
+      //     }
+      //   }
+      // });
     },
     addPoint(point, immediate = false) {
       const { x, y } = this.pixel2Coord(point.map_point);
@@ -272,62 +284,58 @@ export default {
       });
     },
     addRobot(robot, immediate = false) {
-      console.log(robot);
       const { id, name, status, coordinate_pixel } = robot;
       const { x, y, angle } = this.pixel2CoordAngle(coordinate_pixel);
-      return new Promise((resolve, reject) => {
-        const icon = new Image();
-        icon.onload = () => {
-          const path = new Konva.Line({
-            points: [x, y],
-            stroke: '#008c74',
-            strokeWidth: 2,
-            lineCap: 'round',
-            lineJoin: 'round',
-          });
-          const imageW = Math.round(30 / this.scale);
-          const imageH = Math.round(30 / this.scale);
-          const image = new Konva.Image({
-            x: x,
-            y: y,
-            width: imageW,
-            height: imageH,
-            offsetX: imageW / 2,
-            offsetY: imageH / 2,
-            rotation: angle,
-            image: icon,
-          });
-          image.on('click', () => {
-            if (!status) return;
-            if (this.robotData[id]) {
-              this.$emit('robotClick', { ...this.robotData[id], detector_name: name });
-            }
-          });
-          this.robotLayer.add(path);
-          this.robotLayer.add(image);
-          // 立即绘制元素
-          if (immediate) image.draw();
-          this.robotList.push({ id, name, status, path, image });
-          resolve(image);
-        };
-        icon.onerror = (err) => {
-          reject(err);
-        };
-        icon.src = status
-          ? require('@/assets/images/icon_robot_online.png')
-          : require('@/assets/images/icon_robot_offline.png');
-      });
+      this.robotLayer = new Konva.Layer();
+      //return new Promise((resolve, reject) => {
+      let icon = new Image();
+      icon.onload = () => {
+        const path = new Konva.Line({
+          points: [x, y],
+          stroke: '#008c74',
+          strokeWidth: 2,
+          lineCap: 'round',
+          lineJoin: 'round',
+        });
+        const imageW = Math.round(20 / this.scale);
+        const imageH = Math.round(20 / this.scale);
+        console.log(this.scale_x , this.scale_y)
+        const image = new Konva.Image({
+          x: x ? x * this.scale_x : 100,
+          y: y ? y * this.scale_y : 100,
+          width: imageW,
+          height: imageH,
+          offsetX: imageW / 2,
+          offsetY: imageH / 2,
+          rotation: Number(angle),
+          image: icon,
+        });
+        image.on('click', () => {
+          if (!status) return;
+          if (this.robotData[id]) {
+            this.$emit('robotClick', { ...this.robotData[id], detector_name: name });
+          }
+        });
+        this.robotLayer.add(path);
+        this.robotLayer.add(image);
+        this.robotLayer.batchDraw()
+        // 立即绘制元素
+        if (immediate) image.draw();
+        this.robotList.push({ id, name, status, path, image });
+        this.stage.add(this.robotLayer);
+      };
+      icon.onerror = (err) => {
+        //reject(err);
+      };
+      icon.src = require('@/assets/images/icon_robot_online.png')
     },
     addRobotPath(pixels, type = 'default', immediate = false) {
-      console.log(pixels, '火拳艾斯');
       return new Promise((resolve) => {
-        const points = pixels.coordinate_pixels.split(',z,a,').reduce((acc, pixel) => {
-          console.log(acc, '虎鲸');
+        const points = pixels.split(',z,a,').reduce((acc, pixel) => {
           const { x, y } = this.pixel2Coord(pixel);
           acc = acc.concat(x, y);
           return acc;
         }, []);
-        console.log(points, '小企鹅打老虎屁股');
         const strokeColor = type === 'default' ? '#aaa' : '#008c74';
         const path = new Konva.Line({
           points: points,
@@ -342,9 +350,7 @@ export default {
       });
     },
     pixel2Coord(pixel) {
-      // console.log(pixel,'大白鲨')
       const [x, y] = pixel.split(',');
-      // console.log([x,y],'海狮受')
       const coordX = Math.round(x * this.scale * 100) / 100;
       const coordY = Math.round(y * this.scale * 100) / 100;
       return { x: coordX, y: coordY };
@@ -376,10 +382,12 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #fff;
-
+  overflow-x:scroll;
+  overflow-y:scroll;
   /deep/ .ant-spin-container {
     width: 100%;
     height: 100%;
+    overflow:scroll;
   }
   &-wrapper {
     width: 100%;
