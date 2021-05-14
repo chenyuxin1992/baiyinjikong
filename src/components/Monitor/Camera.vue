@@ -3,13 +3,13 @@
     <header class="camera-header">
       <span>{{ title }}</span>
       <span class="camera-header__action">
-        <a-icon
+        <!-- <a-icon
           v-if="record"
           type="video-camera"
           :class="{ record: recording }"
           :theme="recording ? 'filled' : 'outlined'"
           @click="handleRecordVideo"
-        />
+        /> -->
         <a-icon v-if="screenshot" type="picture" @click="handleScreenshot" />
         <a-icon type="close-circle" @click="handleCloseVideo" />
       </span>

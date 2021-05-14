@@ -276,7 +276,10 @@ export default {
               if (this.deviceTree === 1) {
                 // 设备部件
                 this.$api
-                  .getBaseApi('device', { substation: dataRef.id })
+                  .getBaseApi('area_depth', {
+                    substation: dataRef.id,
+                    parent__isnull: true,
+                  })
                   .then((res) => {
                     if (!res || !res.results) return resolve();
                     dataRef.children = res.results.map((item) => ({
@@ -349,12 +352,26 @@ export default {
           case 3:
             if (this.treeRadio === 'device') {
               if (this.deviceTree === 1) {
-                // 巡视点位
+                // 设备部件
                 this.$api
-                  .getBaseApi('patrolpoint_depth', {
-                    device: dataRef.id,
-                    fields: 'id,name,dec_type,detector,device,preset',
+                  .getBaseApi('area_depth', {
+                    parent: dataRef.id
                   })
+                  .then((res) => {
+                    if (!res || !res.results) return resolve();
+                    dataRef.children = res.results.map((item) => ({
+                      ...item,
+                      tier: 4, // 树节点层级
+                      key: item.id,
+                      checkable: false,
+                    }));
+                    this.treeData = [...this.treeData];
+                  })
+                  .finally(() => resolve());
+              } else {
+                // 摄像机
+                this.$api
+                  .getBaseApi('detector', { substation: dataRef.id, dec_type__in: '10' })
                   .then((res) => {
                     if (!res || !res.results) return resolve();
                     dataRef.children = res.results.map((item) => ({
@@ -363,37 +380,11 @@ export default {
                       key: item.id,
                       focused: false,
                       checkable: false,
-                      slots: {
-                        icon: item.detector
-                          ? ROBOT_TYPE[item.detector]
-                            ? 'robot'
-                            : item.detector.dec_type === 0 || item.detector.dec_type === 2
-                            ? 'camera'
-                            : 'videorobot'
-                          : 'none',
-                      },
+                      disabled: item.status !== 1,
+                      class: `sg-state__detector-${item.status}`,
+                      slots: { icon: 'camera' },
                       scopedSlots: { title: 'title' },
                     }));
-                    this.treeData = [...this.treeData];
-                  })
-                  .finally(() => resolve());
-              } else {
-                // 预置位
-                this.$api
-                  .getBaseApi('preset_depth', { detector: dataRef.id })
-                  .then((res) => {
-                    if (!res || !res.results) return resolve();
-                    dataRef.children = res.results.map((item) => {
-                      const { detector } = item;
-                      return {
-                        ...item,
-                        tier: 4, // 树节点层级
-                        key: item.id,
-                        isLeaf: true,
-                        checkable: true,
-                        slots: { icon: 'preset' },
-                      };
-                    });
                     this.treeData = [...this.treeData];
                   })
                   .finally(() => resolve());
@@ -432,9 +423,38 @@ export default {
           case 4:
             if (this.treeRadio === 'device') {
               if (this.deviceTree === 1) {
+                // 巡视点位
+                this.$api
+                  .getBaseApi('patrolpoint_depth', {
+                    area: dataRef.id,
+                    fields: 'id,name,dec_type,detector,device,preset',
+                  })
+                  .then((res) => {
+                    if (!res || !res.results) return resolve();
+                    dataRef.children = res.results.map((item) => ({
+                      ...item,
+                      tier: 5, // 树节点层级
+                      key: item.id,
+                      focused: false,
+                      checkable: false,
+                      slots: {
+                        icon: item.detector
+                          ? ROBOT_TYPE[item.detector]
+                            ? 'robot'
+                            : item.detector.dec_type === 0 || item.detector.dec_type === 2
+                            ? 'camera'
+                            : 'videorobot'
+                          : 'none',
+                      },
+                      scopedSlots: { title: 'title' },
+                    }));
+                    this.treeData = [...this.treeData];
+                  })
+                  .finally(() => resolve());
+              } else {
                 // 预置位
                 this.$api
-                  .getBaseApi('preset_depth', { patrolpoint: dataRef.id })
+                  .getBaseApi('preset_depth', { detector: dataRef.id })
                   .then((res) => {
                     if (!res || !res.results) return resolve();
                     dataRef.children = res.results.map((item) => {
@@ -451,7 +471,7 @@ export default {
                     this.treeData = [...this.treeData];
                   })
                   .finally(() => resolve());
-              }
+              }              
             } else {
               // 探测器
               this.$api
@@ -475,6 +495,57 @@ export default {
                 .finally(() => resolve());
             }
             break;
+          case 5:
+            if(this.treeRadio === 'device'){
+              if (this.deviceTree === 1) {
+                // 预置位
+                this.$api
+                  .getBaseApi('preset_depth', { patrolpoint: dataRef.id })
+                  .then((res) => {
+                    if (!res || !res.results) return resolve();
+                    dataRef.children = res.results.map((item) => {
+                      const { detector } = item;
+                      return {
+                        ...item,
+                        tier: 6, // 树节点层级
+                        key: item.id,
+                        isLeaf: true,
+                        checkable: true,
+                        slots: { icon: 'preset' },
+                      };
+                    });
+                    this.treeData = [...this.treeData];
+                  })
+                  .finally(() => resolve());
+              }
+            }
+            break;
+            case 6:
+              if(this.treeRadio === 'device'){
+                if (this.deviceTree === 1) {
+                  // 预置位
+                  this.$api
+                    .getBaseApi('preset_depth', { patrolpoint: dataRef.id })
+                    .then((res) => {
+                      if (!res || !res.results) return resolve();
+                      dataRef.children = res.results.map((item) => {
+                        const { detector } = item;
+                        return {
+                          ...item,
+                          tier: 7, // 树节点层级
+                          key: item.id,
+                          isLeaf: true,
+                          checkable: true,
+                          slots: { icon: 'preset' },
+                        };
+                      });
+                      this.treeData = [...this.treeData];
+                    })
+                    .finally(() => resolve());
+                }
+              }
+              break;
+              
           default:
             return resolve();
         }

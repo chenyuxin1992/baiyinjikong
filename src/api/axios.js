@@ -70,7 +70,7 @@ request.interceptors.response.use(
       message.error('权限不足！');
       return Promise.reject(error);
     } else {
-      message.error('网络请求错误！');
+      //message.error('网络请求错误！');
       return Promise.reject(error);
     }
   }

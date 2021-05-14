@@ -181,7 +181,7 @@
                     detector: item.detector,
                     lightUrl: item.lightUrl,
                     infraredUrl: item.infraredUrl,
-                    autoplay: true,
+                    autoplay: false,
                   }"
                 />
                 <sg-camera
@@ -194,7 +194,7 @@
                     //preset: item.preset,
                     detector: item.detector,
                     gesture: false,
-                    autoplay: true,
+                    autoplay: false,
                   }"
                 />
               </swiper-slide>
@@ -423,6 +423,7 @@ import {
   ROBOT_TYPE,
   TASK_STATUS,
   TASK_VALID,
+  DEVICE_TYPE,
 } from '@/enum';
 
 export default {
@@ -446,6 +447,13 @@ export default {
     }),
     dataSources() {
       return Object.entries(DATA_SOURCE).map(([key, val]) => ({
+        text: val,
+        label: val,
+        value: +key,
+      }));
+    },
+    deviceTypes() {
+      return Object.entries(DEVICE_TYPE).map(([key, val]) => ({
         text: val,
         label: val,
         value: +key,
@@ -490,11 +498,11 @@ export default {
     deviceColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
-        { title: '间隔', dataIndex: 'bay_name', align: 'center' },
-        { title: '设备', dataIndex: 'device_name', align: 'center' },
-        { title: '状态', dataIndex: 'taskState', align: 'center', width: 150 },
-        { title: '结论', dataIndex: 'conclusion', align: 'center', width: 150 },
-        { title: '操作', align: 'center', width: 150, scopedSlots: { customRender: 'operation' } },
+        { title: '间隔', dataIndex: 'bay_name', align: 'center', width: 150  ,ellipsis: true},
+        { title: '设备', dataIndex: 'device_name', align: 'center', width: 150 ,ellipsis: true },
+        { title: '设备类型', dataIndex: 'type', align: 'center', width: 120 },
+        { title: '结论', dataIndex: 'conclusion', align: 'center', width: 120 },
+        { title: '操作', align: 'center', width: 120, scopedSlots: { customRender: 'operation' } },
       ];
     },
     pointColumns() {
@@ -724,7 +732,7 @@ export default {
             track_total_hits: true,
           })
           .then((res) => {
-            if (!res || !res.hits.total.value) return;
+            //if (!res || !res.hits.total.value) return;
             let allowExport = true;
             for (let i = 0; i < res.hits.hits.length; i++) {
               const { _source } = res.hits.hits[i];
@@ -743,7 +751,7 @@ export default {
                   if (!res) return;
                   FileSaver.saveAs(
                     `https://${location.hostname}:8443/html/shares/report/${res}`,
-                    '任务巡视报告.docx'
+                    res
                   );
                 });
             } else {
@@ -1058,19 +1066,18 @@ export default {
         })
         .then((res) => {
           //if (!res || !res.hits.total.value) return;
-          console.log('hahahhaaa',res);
           this.deviceList = [];
           this.deviceData = res.hits.hits.map((item, index) => {
             const source = item._source;
             const tableIndex = this.devicePage.pageSize * (this.devicePage.current - 1) + index + 1;
             this.deviceList.push(source.device_id);
-            console.log('deviceList', this.deviceList);
             return {
               ...source,
               id: item._id,
               index: tableIndex,
               taskState: TASK_STATUS[source.status] || '-',
-              conclusion: source.valid === 1 ? '识别正常' : '识别异常',
+              conclusion: source.valid === 1 ? '正常' : '异常',
+              type: DEVICE_TYPE[source.device_type] || '-',
             };
           });
           this.devicePage.total = this.deviceList.length;
@@ -1251,7 +1258,7 @@ export default {
                 status,
                 type: 'camera',
                 detector: item.detector,
-                preset: _.omitBy(item, _.isObject),
+                //preset: _.omitBy(item, _.isObject),
               };
             }
           });
@@ -1262,6 +1269,59 @@ export default {
               player && player.playVideo();
             }
           });
+        }).catch(() => {
+
+        this.$api.getBaseApi('detector', { substation: this.substationId }).then((res) => {
+          console.log('detector',res.results);
+          if (!res || !res.count) return;
+          const detectors = res.results.map((item) => {
+            const {
+              id,
+              name,
+              status,
+              dec_type,
+              out_code,
+              video_address1,
+              video_address2,
+            } = item;
+            console.log('idetector',res.results);
+            if (ROBOT_TYPE[dec_type]) {
+              return {
+                id,
+                name,
+                status,
+                type: 'robot',
+                detector: item.detector,
+                lightUrl: video_address1,
+                infraredUrl: video_address2,
+              };
+            } else {
+              const [did, cno] = out_code.split('_');
+              const url = `wss://${location.hostname}:8443/media/${did}/${cno}.flv`;
+              return {
+                id,
+                did,
+                cno,
+                url,
+                name,
+                status,
+                type: 'camera',
+                detector: item.detector,
+                //preset: _.omitBy(item, _.isObject),
+              };
+            }
+          });
+          this.detectorList = _.uniqBy(detectors, 'id');
+          console.log('detectorList', this.detectorList);
+          this.$nextTick(() => {
+            if (this.detectorList.length > 0) {
+              const player = this.$refs[`player-0`][0];
+              player && player.playVideo();
+            }
+          });
+        });        
+
+          
         });
       });
     },

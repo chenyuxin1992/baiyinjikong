@@ -344,6 +344,7 @@ export default {
           break;
         case 'export':
           this.$api.postHistoryApi('api', 'export_doc', { task_id: row.task_id }).then((res) => {
+            console.log(res);
             // this.$message.success(
             //   '任务报表导出成功！' + '报表保存路径/data/html/shares/report/' + res
             // );
@@ -352,7 +353,7 @@ export default {
             // console.log(url);
             FileSaver.saveAs(
               `https://${location.hostname}:8443/html/shares/report/${res}`,
-              '任务巡视报告.docx'
+              res
             );
           });
           break;
@@ -430,6 +431,7 @@ export default {
               dataSource: DATA_SOURCE[_source.source] || '-',
               result: { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
             };
+            console.log('progress1',dataItem.progress);
             this.$api
               .postHistoryApi('historyitems', '_search', {
                 size: 0,
@@ -443,6 +445,7 @@ export default {
                 dataItem.progress = _source.total
                   ? Math.round((dataItem.result.done / _source.total) * 100)
                   : 0;
+                console.log('progress2',dataItem.progress);
               });
             this.$api
               .postHistoryApi('api', 'task_count', { task_id: _source.task_id })
