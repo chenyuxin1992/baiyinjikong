@@ -167,14 +167,8 @@ export default {
           // expire_sec: 5,
         })
         .then((res) => {
-          if (!res) return;
-          console.log(res);
           this.$emit('screenshot', {
-            image: `https://${location.hostname}:8443/media/api/v2/getSnap?url=http%3A%2F%2F${
-              location.hostname
-            }%3A10080%2F${this.did}%2F${
-              this.cno
-            }.flv&timeout_sec=10&expire_sec=5&time=${this.$moment()}`,
+            image: `https://${location.hostname}:8443/media/api/v2/getpicture?devidx=${this.did}&channelno=${this.cno}&time=${this.$moment()}`,
             title: this.title,
           });
         })
@@ -216,10 +210,11 @@ export default {
           })
           .then((res) => {
             if (!res) return;
-            const videos = res.paths.map(
+            const videos = res.data.paths.map(
               (item) =>
                 `https://${location.hostname}:8443/media/record/${this.did}/${this.cno}/${date}/${item}`
             );
+            console.log('videos',videos);
             this.$emit('recording', { videos, title: this.title });
           });
         this.$emit('recording', { videos: null, title: this.title });

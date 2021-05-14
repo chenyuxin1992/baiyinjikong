@@ -68,24 +68,15 @@
         <a-time-picker v-model="timeEnd" placeholder="结束时间" />
       </div>
       <div class="video-stream">
-        <a-popover title="视频录像类型" placement="top" overlay-class-name="sg-popover">
-          <template #content>
-            <a-checkbox-group
-              class="video-stream__type"
-              :options="streamTypes"
-              @change="onVideoTypeChange"
-            ></a-checkbox-group>
-          </template>
           <a-button
             class="video-stream__load"
             type="primary"
-            :disabled="!deviceId || !videoType"
+            :disabled="!deviceId"
             :loading="loadStream"
             block
             @click="getVideoStreamList"
             >加载回放视频流
           </a-button>
-        </a-popover>
         <div class="video-stream__action">
           <a-button
             shape="circle"
@@ -129,7 +120,7 @@
             :included="false"
             :step="null"
             :min="0.25"
-            :max="4"
+            :max="3"
             dots
           />
         </div>
@@ -288,18 +279,18 @@ export default {
       videoImage: '',
       videoSpeed: 1,
       videoSpeedIndex: 3,
-      videoMarks: { 0.25: '0.25', 0.5: '', 1: '1', 2: '2', 4: '4' },
+      videoMarks: { 0.25: '0.25', 0.5: '0.5', 1: '1', 1.5: '1.5', 2: '2', 3: '3' },
       videoStreams: [],
       videoStreamIndex: 0,
       videoStreamList: [
-        {
-          name: '2020-09-17 23:42:52_2020-09-18 00:00:32',
-          fileName: 'ch0001_00000000487000000', //录像名称
-          fileSize: 1064904288, //录像大小（字节）
-          isLocked: 0, //录像是否锁定（锁定后，不覆盖）
-          startTime: '2020-09-17 23:42:52', //开始时间
-          stopTime: '2020-09-18 00:00:32', //结束时间
-        },
+        // {
+        //   name: '2020-09-17 23:42:52_2020-09-18 00:00:32',
+        //   fileName: 'ch0001_00000000487000000', //录像名称
+        //   fileSize: 1064904288, //录像大小（字节）
+        //   isLocked: 0, //录像是否锁定（锁定后，不覆盖）
+        //   startTime: '2020-09-17 23:42:52', //开始时间
+        //   stopTime: '2020-09-18 00:00:32', //结束时间
+        // },
       ],
       videoRecordList: [],
       videoRecordSel: [],
@@ -343,9 +334,9 @@ export default {
       switch (action) {
         case 'play':
           this.$api
-            .getMediaApi('playback_pause', {
-              idx: this.deviceId,
-              streamid: this.streamId,
+            .getMediaApi('pauseplayback', {
+              devidx: this.deviceId,
+              stream: this.streamId,
               pause: 0,
             })
             .then(() => {
@@ -356,9 +347,9 @@ export default {
           break;
         case 'pause':
           this.$api
-            .getMediaApi('playback_pause', {
-              idx: this.deviceId,
-              streamid: this.streamId,
+            .getMediaApi('pauseplayback', {
+              devidx: this.deviceId,
+              stream: this.streamId,
               pause: 1,
             })
             .then(() => {
@@ -407,13 +398,14 @@ export default {
             const date = this.$moment(this.dateSel).format('YYYY-MM-DD');
             const timeEnd = this.$moment(this.timeEnd).format('HH:mm:ss');
             const timeStart = this.$moment(this.timeStart).format('HH:mm:ss');
-            console.log(`${date}T${timeStart}Z`);
+            let start_time = `${date} ${timeStart}`;
+            let end_time = `${date} ${timeEnd}`;
             this.$api
               .getMediaApi('gethistoryrecord', {
                 devidx: this.deviceId,
                 channelno: this.channelNo,
-                start: `${date}T${timeStart}Z`,
-                stop: `${date}T${timeEnd}Z`,
+                start: Date.parse(start_time) / 1000,
+                stop: Date.parse(end_time) / 1000,
               })
               .then((res) => {
                 if (!res) return;
@@ -431,7 +423,7 @@ export default {
           break;
         case 'check':
           this.$api
-            .getMediaApi('/getrecordpos', {
+            .getMediaApi('getrecordpos', {
               devidx: this.deviceId,
               handle: this.loadHandle,
             })
@@ -449,7 +441,7 @@ export default {
           break;
         case 'stop':
           this.$api
-            .getMediaApi('/stophistoryrecord', {
+            .getMediaApi('stophistoryrecord', {
               devidx: this.deviceId,
               handle: this.loadHandle,
             })
@@ -507,10 +499,10 @@ export default {
     onVideoSpeedChange(speed) {
       if (!this.streamId) return this.$message.warn('暂未回放视频流！');
       this.$api
-        .getMediaApi('playback_scale', {
-          idx: this.deviceId,
-          streamid: this.streamId,
-          scale: speed,
+        .getMediaApi('setplaybackspeed', {
+          devidx: this.deviceId,
+          stream: this.streamId,
+          speed: speed,
         })
         .then((res) => {
           if (!res) return;
@@ -573,17 +565,9 @@ export default {
     },
     // 播放视频流
     playVideoStream(stream, start = 0) {
-      this.$api
-        .getMediaApi('playback_play', {
-          idx: this.deviceId,
-          streamid: stream.sid,
-          range: `${start}-${stream.dura}`,
-        })
-        .then(() => {
-          this.videoPlay = stream.play = true;
-          const player = this.$refs[`player-${stream.sid}`][0];
-          player && player.playVideo();
-        });
+      this.videoPlay = stream.play = true;
+      const player = this.$refs[`player-${stream.sid}`][0];
+      player && player.playVideo();
     },
     // 拉取视频流
     pullVideoStream(video) {
@@ -591,12 +575,11 @@ export default {
       this.$api
         .getMediaApi('startplayback', {
           devidx: this.deviceId,
-          cameraIdx: this.channelNo,
-          decodeTag: video.DecoderTag,
-          rtspUrl: video.FileUrl,
-          range: `0-${video.range}`,
-          start: video.recordStarttime,
-          stop: video.recordStoptime,
+          channelno: this.channelNo,
+          start: this.$moment(video.recordStarttime).format('YYYY_MM_DD_HH_mm_ss'),
+          stop: this.$moment(video.recordStoptime).format('YYYY_MM_DD_HH_mm_ss'),
+          // start: video.recordStarttime,
+          // stop: video.recordStoptime,
         })
         .then((res) => {
           if (!res) return;
@@ -612,7 +595,7 @@ export default {
                 name: channelName,
                 size: video.Size,
                 dura: video.range,
-                url: `https://${location.hostname}:8443/media/${this.deviceId}/${stream}.flv`,
+                url: `wss://${location.hostname}:8443/media/${this.deviceId}/${stream}.flv`,
               };
               this.videoStreams.push(videoStream);
               setTimeout(() => {
@@ -645,29 +628,26 @@ export default {
     // 获取视频流列表
     getVideoStreamList() {
       if (!this.deviceId) return this.$message.warn('请先选择视频设备！');
-      if (!this.videoType) return this.$message.warn('请先选择录像类型！');
+      // if (!this.videoType) return this.$message.warn('请先选择录像类型！');
       this.loadStream = true;
-      const date = this.$moment(this.dateSel).format('YYYY-MM-DD');
-      const timeEnd = this.$moment(this.timeEnd).format('HH:mm:ss');
-      const timeStart = this.$moment(this.timeStart).format('HH:mm:ss');
+      const date = this.$moment(this.dateSel).format('YYYY_MM_DD');
+      const timeEnd = this.$moment(this.timeEnd).format('HH_mm_ss');
+      const timeStart = this.$moment(this.timeStart).format('HH_mm_ss');
       this.$api
-        .getMediaApi('request_history_video', {
-          idx: this.deviceId,
-          no: this.channelNo,
-          type: this.videoType,
-          fromindex: 1,
-          toindex: 1000,
-          begintime: `${date}T${timeStart}Z`,
-          endtime: `${date}T${timeEnd}Z`,
+        .getMediaApi('getrecordfile', {
+          devidx: this.deviceId,
+          channelno: this.channelNo,
+          start: `${date}_${timeStart}`,
+          stop: `${date}_${timeEnd}`,
         })
         .then((res) => {
           if (!res) return;
-          this.videoStreamList = res.data.videoList.map((item) => ({
+          this.videoStreamList = res.data.fileInfo.map((item) => ({
             ...item,
-            name: `${item.BeginTime}_${item.EndTime}`,
-            range: this.$moment(item.EndTime).diff(this.$moment(item.BeginTime), 'seconds'),
-            recordStarttime: item.BeginTime,
-            recordStoptime: item.EndTime,
+            name: `${item.startTime}录像回放`,
+            range: this.$moment(item.stopTime).diff(this.$moment(item.startTime), 'seconds'),
+            recordStarttime: item.startTime,
+            recordStoptime: item.stopTime,
           }));
         })
         .finally(() => {

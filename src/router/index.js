@@ -240,14 +240,14 @@ export const asyncRoutes = {
             title: '检修区域设置',
           },
         },
-        {
-          path: 'robot-manage',
-          name: 'RobotManage',
-          component: () => import('@/views/patrol/robot-manage'),
-          meta: {
-            title: '机器人管理',
-          },
-        },
+        // {
+        //   path: 'robot-manage',
+        //   name: 'RobotManage',
+        //   component: () => import('@/views/patrol/robot-manage'),
+        //   meta: {
+        //     title: '机器人管理',
+        //   },
+        // },
       ],
     },
     {
@@ -338,68 +338,68 @@ export const asyncRoutes = {
         },
       ],
     },
-    {
-      path: '/config',
-      name: 'Config',
-      component: Layout,
-      meta: { title: '配置管理' },
-      children: [
-        // {
-        //   path: 'alarm-prompt',
-        //   name: 'AlarmPrompt',
-        //   component: () => import('@/views/config/alarm-prompt'),
-        //   meta: {
-        //     title: '告警提示',
-        //   },
-        // },
-        {
-          path: 'remote-linkage',
-          name: 'RemoteLinkage',
-          component: () => import('@/views/config/remote-linkage'),
-          meta: {
-            title: '远程联动配置',
-          },
-        },
-        {
-          path: 'local-linkage',
-          name: 'LocalLinkage',
-          component: () => import('@/views/config/local-linkage'),
-          meta: { title: '本地联动配置' },
-        },
-        {
-          path: 'resource-query',
-          name: 'ResourceQuery',
-          component: () => import('@/views/config/resource-query'),
-          meta: {
-            title: '变电资源查询',
-          },
-        },
-        {
-          path: 'data-model',
-          name: 'DataModel',
-          component: () => import('@/views/config/data-model'),
-          meta: {
-            title: '数据字典查询',
-          },
-        },
-        {
-          path: 'data-code',
-          name: 'DataCode',
-          component: () => import('@/views/config/data-code'),
-          meta: {
-            title: '数据代码查询',
-          },
-        },
-        {
-          path: 'device-info',
-          name: 'DeviceInfo',
-          component: () => import('@/views/config/device-info'),
-          meta: {
-            title: '主辅信息查询',
-          },
-        },
-      ],
-    },
+    // {
+    //   path: '/config',
+    //   name: 'Config',
+    //   component: Layout,
+    //   meta: { title: '配置管理' },
+    //   children: [
+    //     // {
+    //     //   path: 'alarm-prompt',
+    //     //   name: 'AlarmPrompt',
+    //     //   component: () => import('@/views/config/alarm-prompt'),
+    //     //   meta: {
+    //     //     title: '告警提示',
+    //     //   },
+    //     // },
+    //     {
+    //       path: 'remote-linkage',
+    //       name: 'RemoteLinkage',
+    //       component: () => import('@/views/config/remote-linkage'),
+    //       meta: {
+    //         title: '远程联动配置',
+    //       },
+    //     },
+    //     {
+    //       path: 'local-linkage',
+    //       name: 'LocalLinkage',
+    //       component: () => import('@/views/config/local-linkage'),
+    //       meta: { title: '本地联动配置' },
+    //     },
+    //     {
+    //       path: 'resource-query',
+    //       name: 'ResourceQuery',
+    //       component: () => import('@/views/config/resource-query'),
+    //       meta: {
+    //         title: '变电资源查询',
+    //       },
+    //     },
+    //     {
+    //       path: 'data-model',
+    //       name: 'DataModel',
+    //       component: () => import('@/views/config/data-model'),
+    //       meta: {
+    //         title: '数据字典查询',
+    //       },
+    //     },
+    //     {
+    //       path: 'data-code',
+    //       name: 'DataCode',
+    //       component: () => import('@/views/config/data-code'),
+    //       meta: {
+    //         title: '数据代码查询',
+    //       },
+    //     },
+    //     {
+    //       path: 'device-info',
+    //       name: 'DeviceInfo',
+    //       component: () => import('@/views/config/device-info'),
+    //       meta: {
+    //         title: '主辅信息查询',
+    //       },
+    //     },
+    //   ],
+    // },
   ],
 };
 

@@ -51,14 +51,14 @@
           />
           <a-button size="small" @click="handleQueryData('device')">查询</a-button>
           <!-- <a-button size="small" @click="handleExportData('device')">导出</a-button> -->
-          <span class="switch">
+          <!-- <span class="switch">
             <a-switch
               v-model="checkExcept"
               size="small"
               @change="onSwitchChange('defect', $event)"
             />
             <span>只看异常</span>
-          </span>
+          </span> -->
         </div>
         <a-table
           row-key="id"
@@ -91,7 +91,7 @@
           <a-button size="small" @click="handleQueryData('point')">查询</a-button>
           <span class="switch">
             <a-switch v-model="checkAlarm" size="small" @change="onSwitchChange('alarm', $event)" />
-            <span>只看告警</span>
+            <span>只看异常</span>
           </span>
         </div>
         <a-table
@@ -593,9 +593,9 @@ export default {
       pointData: [],
       pointPage: { total: 0, current: 1, pageSize: 5, size: 'small' },
       detectorIndex: 0,
-      detectorList: Array.from({ length: 3 }, (_, index) => ({
+      detectorList: Array.from({ length: 1 }, (_, index) => ({
         id: ++index,
-        name: `摄像机${index + 1}`,
+        name: `摄像机${index}`,
         status: Math.random() > 0.5,
         url: '',
       })),
@@ -710,7 +710,7 @@ export default {
           if (!res) return;
           FileSaver.saveAs(
             `https://${location.hostname}:8443/html/shares/tar/${res}`,
-            this.taskData.plantask_name + '20210318.tar'
+            this.taskData.plantask_name + this.taskData.start_time + '.tar'
           );
         });
       } else {
@@ -1043,7 +1043,7 @@ export default {
         });
     },
     getDeviceTableData() {
-      this.deviceLoad = true;
+      //this.deviceLoad = true;
       let params = [{ match: { task_id: this.taskId } }];
       //this.checkExcept && params.push({ match: { status: 2 } }, { match: { status: 4 } });
       this.deviceName && params.push({ match: { device_name: this.deviceName } });
@@ -1076,11 +1076,11 @@ export default {
           this.devicePage.total = this.deviceList.length;
         })
         .finally(() => {
-          this.deviceLoad = false;
+          //this.deviceLoad = false;
         });
     },        
     getPointTableData(deviceId) {
-      this.pointLoad = true;
+      //this.pointLoad = true;
       let mustnotParams = [];
       this.checkAlarm && mustnotParams.push({ match: { valid: 1 } });
       let mustParams = [{ match: { task_id: this.taskId } }];
@@ -1113,7 +1113,7 @@ export default {
           this.pointPage.total = res.hits.total.value;
         })
         .finally(() => {
-          this.pointLoad = false;
+          //this.pointLoad = false;
         });
     },
     getAlarmTableData() {

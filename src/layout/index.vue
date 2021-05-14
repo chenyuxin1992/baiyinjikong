@@ -257,14 +257,13 @@
         </a-form-model-item>
       </a-form-model>
     </a-drawer>
-    <a-popover
+    <!-- <a-popover
       v-if="alarmVisible"
       v-model="alarmPopup"
       trigger="click"
       placement="bottomLeft"
       overlay-class-name="sg-popover alarm"
     >
-      <!-- @visibleChange="onPopoverToggle" -->
       <template #title>
         <div class="alarm-title">
           <span>告警信息列表</span>
@@ -338,7 +337,7 @@
       <a-badge id="alarm" :count="alarmCount">
         <a-button type="primary" shape="circle" size="large" icon="notification"></a-button>
       </a-badge>
-    </a-popover>
+    </a-popover> -->
   </a-layout>
 </template>
 <script>
