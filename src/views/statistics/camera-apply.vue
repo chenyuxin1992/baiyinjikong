@@ -22,7 +22,7 @@
             <a-col class="sg-col" :span="12">
               <div class="sg-view md">
                 <div class="sg-view-title">摄像机类型统计</div>
-                <camera-statis class="sg-view-content" />
+                <camera-statis class="sg-view-content" :stationId="stationId" />
               </div>
             </a-col>
             <a-col class="sg-col" :span="12">
@@ -37,7 +37,12 @@
           <div class="sg-view md">
             <div class="sg-view-title">摄像机部署统计</div>
             <div class="sg-view-content">
-              <sg-chart type="bar" :options="cameraDeploy" @sendkeys="cameralayouttotal" />
+              <sg-chart
+                type="bar"
+                :options="cameraDeploy"
+                :stationId="stationId"
+                @sendkeys="cameralayouttotal"
+              />
             </div>
           </div>
         </a-col>
@@ -174,6 +179,7 @@ export default {
       },
     };
   },
+
   created() {
     this.getStatisData();
   },
@@ -195,14 +201,17 @@ export default {
     },
     onTreeCheck(_, { node, checked }) {
       const { dataRef } = node;
+      console.log({ dataRef });
       if (checked) {
         this.stationName = dataRef.name;
+        console.log(this.stationName, 'qwer');
         this.stationId = dataRef.id;
       } else {
         this.stationName = '请选择站点';
         this.stationId = '';
       }
       this.getCameraStatisData();
+      this.getCameraDeployData();
     },
     getStatisData() {
       const [timeStart, timeEnd] = this.timeRange.map((date) =>
@@ -236,6 +245,7 @@ export default {
           this.$api
             .getBaseApi('detector', { substation: station.id, dec_type: 10, page_size: 6000 })
             .then((res) => {
+              // console.log(res,'去健身房健身')
               if (!res) return resolve();
               if (res.count > 0) {
                 res.results.forEach((item) => {
@@ -255,16 +265,26 @@ export default {
         let cameraData = results.map((item) => ({ name: item.name, ...dataItem }));
         for (let i = 0; i < count; i++) {
           const station = results[i];
+          // console.log(station,'阿斯顿')
           const dataItem = cameraData[i];
           await getCameraDeployItem(station, dataItem);
         }
-        console.log(cameraData, 12580);
-        //摄像机部署统计超过10个截取前十个，小于10个显示所有
-        if (cameraData.length <= 10 && cameraData != '') {
-          this.cameraDeploy.dataset.source = cameraData;
+        if (this.stationId != '') {
+          for (let i = 0; i < cameraData.length; i++) {
+            if (this.stationName == cameraData[i].name) {
+              let newCameradata = [];
+              newCameradata.push(cameraData[i]);
+              this.cameraDeploy.dataset.source = newCameradata;
+            }
+          }
         } else {
-          let before10cameraData = cameraData.slice(0, 10);
-          this.cameraDeploy.dataset.source = before10cameraData;
+          //摄像机部署统计超过10个截取前十个，小于10个显示所有
+          if (cameraData.length <= 10 && cameraData != '') {
+            this.cameraDeploy.dataset.source = cameraData;
+          } else {
+            let before10cameraData = cameraData.slice(0, 10);
+            this.cameraDeploy.dataset.source = before10cameraData;
+          }
         }
       });
     },
