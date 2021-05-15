@@ -458,7 +458,7 @@ export default {
         label: val,
         value: +key,
       }));
-    },
+    },    
     alarmLevels() {
       return Object.entries(ALARM_LEVEL).map(([key, val]) => ({
         text: val,
@@ -498,18 +498,18 @@ export default {
     deviceColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
-        { title: '间隔', dataIndex: 'bay_name', align: 'center', width: 150  ,ellipsis: true},
-        { title: '设备', dataIndex: 'device_name', align: 'center', width: 150 ,ellipsis: true },
+        { title: '间隔', dataIndex: 'bay_name', align: 'center', width: 150  ,ellipsis: true},
+        { title: '设备', dataIndex: 'device_name', align: 'center', width: 150 ,ellipsis: true },
         { title: '设备类型', dataIndex: 'type', align: 'center', width: 120 },
         { title: '结论', dataIndex: 'conclusion', align: 'center', width: 120 },
-        { title: '操作', align: 'center', width: 120, scopedSlots: { customRender: 'operation' } },
+        { title: '操作', align: 'center', width: 120, scopedSlots: { customRender: 'operation' } },        
       ];
     },
     pointColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
-        { title: '部件', dataIndex: 'component_name', align: 'center', width: 100 ,ellipsis: true},
-        { title: '巡视内容', dataIndex: 'patrolpoint_name', align: 'center', width: 110 ,ellipsis: true},
+        { title: '部件', dataIndex: 'component_name', align: 'center', width: 100 ,ellipsis: true},
+        { title: '巡视内容', dataIndex: 'patrolpoint_name', align: 'center', width: 110 ,ellipsis: true},        
         { title: '巡视结论', dataIndex: 'conclusion', align: 'center', width: 110 },
         { title: '识别结果', dataIndex: 'value_disp', align: 'center', width: 100 },
         { title: '原始值', dataIndex: 'value', align: 'center', width: 90 },
@@ -663,7 +663,7 @@ export default {
       alarmLevel: undefined,
       alarmData: [],
       alarmPage: { total: 0, current: 1, pageSize: 5, size: 'small' },
-      deviceList: [], 
+      deviceList: [],
     };
   },
   created() {
@@ -886,13 +886,12 @@ export default {
         }
         if (action === 'task_station_result' && this.taskId === item.task_patrolled_id) {
           const { detector_id } = item;
-          if(this.deviceList.indexOf(detector_id) == -1) {
+          if (this.deviceList.indexOf(detector_id) == -1) {
             this.getDeviceTableData();
           }
           if (this.deviceId === detector_id) {
             this.getPointTableData(this.deviceId);
-          } 
-          else if(!this.deviceId) {
+          } else if (!this.deviceId) {
             this.getPointTableData();
             this.getPatrolSnapshotData();
           }
@@ -965,7 +964,11 @@ export default {
       } else {
         this.pointSource = undefined;
       }
-      this.getPointTableData();
+      if (this.deviceId) {
+        this.getPointTableData(this.deviceId);
+      } else {
+        this.getPointTableData();
+      }
     },
     onAlarmTableChange(pagination, filters) {
       this.alarmPage.current = pagination.current;
@@ -1067,10 +1070,17 @@ export default {
       this.deviceName && params.push({ match: { device_name: this.deviceName } });
       this.$api
         .postHistoryApi('historyitems', '_search', {
-          // from: this.devicePage.pageSize * (this.devicePage.current - 1),
-          // size: this.devicePage.pageSize,
+          from: this.devicePage.pageSize * (this.devicePage.current - 1),
+          size: this.devicePage.pageSize,
           query: { bool: { must: params } },
-          collapse: {field: 'device_id'},
+          collapse: { field: 'device_id' },
+          aggs: {
+            device_count: {
+              cardinality: {
+                field: 'device_id',
+              },
+            },
+          },
           // _source: { excludes: ['image'] },
           //track_total_hits: true,
         })
@@ -1079,7 +1089,7 @@ export default {
           this.deviceList = [];
           this.deviceData = res.hits.hits.map((item, index) => {
             const source = item._source;
-            const tableIndex = this.devicePage.pageSize * (this.devicePage.current - 1) + index + 1;
+            let tableIndex = this.devicePage.pageSize * (this.devicePage.current - 1) + index + 1;
             this.deviceList.push(source.device_id);
             return {
               ...source,
@@ -1087,15 +1097,15 @@ export default {
               index: tableIndex,
               taskState: TASK_STATUS[source.status] || '-',
               conclusion: source.valid === 1 ? '正常' : '异常',
-              type: DEVICE_TYPE[source.device_type] || '-',
+              type: DEVICE_TYPE[source.device_type] || '-',              
             };
           });
-          this.devicePage.total = this.deviceList.length;
+          this.devicePage.total = res.aggregations.device_count.value;
         })
         .finally(() => {
           //this.deviceLoad = false;
         });
-    },        
+    },
     getPointTableData(deviceId) {
       //this.pointLoad = true;
       let mustnotParams = [];
@@ -1330,8 +1340,7 @@ export default {
             }
           });
         });        
-
-          
+      
         });
       });
     },
@@ -1348,19 +1357,7 @@ export default {
         if (res && res.count > 0) {
           this.mapRobots = res.results;
         }
-      })
-      // Promise.all([
-      //   this.$api.getBaseApi('patrolpoint', { substation: this.substationId }),
-      //   this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }),
-      // ]).then(([res1, res2]) => {
-      //   console.log([res1, res2], '黑猫警长');
-      //   if (res1 && res1.count) {
-      //     this.mapPoints = res1.results;
-      //   }
-      //   if (res2 && res2.count) {
-      //     this.mapRobots = res2.results;
-      //   }
-      // });
+      });
     },
   },
 };

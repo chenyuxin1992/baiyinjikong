@@ -98,10 +98,11 @@ export default {
       taskStateStatis: {
         legend: { top: 'middle', left: '80%', align: 'left', orient: 'vertical' },
         dataset: {
-          source: Object.values(TASK_STATUS).map((item) => ({
-            name: item,
-            value: this.$random(10),
-          })),
+          source: [],
+          // Object.values(TASK_STATUS).map((item) => ({
+          //   name: item,
+          //   value: this.$random(10),
+          // })),
         },
         series: [
           {
@@ -115,13 +116,14 @@ export default {
       },
       taskTypeStation: {
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            const dataObj = Object.keys(TASK_PATROL_TYPE).reduce(
-              (acc, key) => ((acc[key] = this.$random(10)), acc),
-              {}
-            );
-            return { name: `变电站${index + 1}`, ...dataObj };
-          }),
+          source: [],
+          // Array.from({ length: 5 }, (_, index) => {
+          //   const dataObj = Object.keys(TASK_PATROL_TYPE).reduce(
+          //     (acc, key) => ((acc[key] = this.$random(10)), acc),
+          //     {}
+          //   );
+          //   return { name: `变电站${index + 1}`, ...dataObj };
+          // }),
         },
         series: Object.entries(TASK_PATROL_TYPE).map(([key, val]) => ({
           type: 'bar',
@@ -133,14 +135,15 @@ export default {
       },
       taskStateStation: {
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            const dataObj = Object.keys(TASK_STATUS).reduce(
-              (acc, key) => ((acc[key] = this.$random(10)), acc),
-              {}
-            );
+          source: [],
+          // Array.from({ length: 5 }, (_, index) => {
+          //   const dataObj = Object.keys(TASK_STATUS).reduce(
+          //     (acc, key) => ((acc[key] = this.$random(10)), acc),
+          //     {}
+          //   );
 
-            return { name: `变电站${index + 1}`, ...dataObj };
-          }),
+          //   return { name: `变电站${index + 1}`, ...dataObj };
+          // }),
         },
         series: Object.entries(TASK_STATUS).map(([key, val]) => ({
           type: 'bar',

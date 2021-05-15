@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { ControlCMD } from '@/enum';
 export default {
   name: 'CameraStatis',
   props: {
@@ -66,6 +67,12 @@ export default {
           1: { name: '可见光', value: 5010, percent: 100 },
           2: { name: '红外', value: 0, percent: 0 },
         };
+      },
+    },
+    stationId: {
+      type: String,
+      default() {
+        return '';
       },
     },
     monitor: {
@@ -83,7 +90,7 @@ export default {
     return {
       detectorData: {
         1: { name: '可见光', value: 5010, percent: 100 },
-        2: { name: '红外', value: 0, percent: 0},
+        2: { name: '红外', value: 0, percent: 0 },
       },
       monitorData: {
         11: { name: '球机', value: 2, online: 2, offline: 0 },
@@ -95,42 +102,51 @@ export default {
   created() {
     this.getCameraStatisData();
   },
+  watch: {
+    stationId: {
+      handler(val) {
+        this.getCameraStatisData();
+      },
+    },
+  },
   methods: {
     getCameraStatisData() {
-      this.$api.getBaseApi('detector', { dec_type: 10, page_size: 6000}).then((res) => {
-        //console.log('摄像头',res);
-        //if (!res || !res.results) return;
-        const { count, results } = res;
-        let detectorData = {
-            1: { name: '可见光', value: 0, percent: 0 },
-            2: { name: '红外', value: 0, percent: 0 },
-          },
-          monitorData = {
-            11: { name: '球机', value: 0, online: 0, offline: 0 },
-            12: { name: '云台', value: 0, online: 0, offline: 0 },
-            10: { name: '枪机', value: 0, online: 0, offline: 0 },
-          };
-        for (const item of results) {
-          const { status, video_mode, camera_type } = item;
-          if (detectorData[video_mode]) {
-            detectorData[video_mode].value += 1;
-          }
-          if (monitorData[camera_type]) {
-            monitorData[camera_type].value += 1;
-            if (status) {
-              monitorData[camera_type].online += 1;
-            } else {
-              monitorData[camera_type].offline += 1;
+      this.$api
+        .getBaseApi('detector', { substation: this.stationId, dec_type: 10, page_size: 6000 })
+        .then((res) => {
+          // console.log('摄像头',res);
+          //if (!res || !res.results) return;
+          const { count, results } = res;
+          let detectorData = {
+              1: { name: '可见光', value: 0, percent: 0 },
+              2: { name: '红外', value: 0, percent: 0 },
+            },
+            monitorData = {
+              11: { name: '球机', value: 0, online: 0, offline: 0 },
+              12: { name: '云台', value: 0, online: 0, offline: 0 },
+              10: { name: '枪机', value: 0, online: 0, offline: 0 },
+            };
+          for (const item of results) {
+            const { status, video_mode, camera_type } = item;
+            if (detectorData[video_mode]) {
+              detectorData[video_mode].value += 1;
+            }
+            if (monitorData[camera_type]) {
+              monitorData[camera_type].value += 1;
+              if (status) {
+                monitorData[camera_type].online += 1;
+              } else {
+                monitorData[camera_type].offline += 1;
+              }
             }
           }
-        }
-        for (const key in detectorData) {
-          const item = detectorData[key];
-          item.percent = Math.round((item.value / count) * 100);
-        }
-        this.detectorData = detectorData;
-        this.monitorData = monitorData;
-      });
+          for (const key in detectorData) {
+            const item = detectorData[key];
+            item.percent = Math.round((item.value / count) * 100);
+          }
+          this.detectorData = detectorData;
+          this.monitorData = monitorData;
+        });
     },
   },
 };

@@ -103,9 +103,7 @@ export default {
       },
       robotMaintain: {
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            return [`变电站${index + 1}`, this.$random(5)];
-          }),
+          source: [],
         },
         series: ['维护记录'].map((item, index) => ({
           type: 'bar',
@@ -117,13 +115,14 @@ export default {
       },
       robotCondition: {
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            const dataObj = Object.keys(ROBOTDETECTOR_STATUS).reduce(
-              (acc, key) => ((acc[key] = this.$random(5)), acc),
-              {}
-            );
-            return { name: `变电站${index + 1}`, ...dataObj };
-          }),
+          source: [],
+          // Array.from({ length: 5 }, (_, index) => {
+          //   const dataObj = Object.keys(ROBOTDETECTOR_STATUS).reduce(
+          //     (acc, key) => ((acc[key] = this.$random(5)), acc),
+          //     {}
+          //   );
+          //   return { name: `变电站${index + 1}`, ...dataObj };
+          // }),
         },
         series: Object.entries(ROBOTDETECTOR_STATUS).map(([key, val]) => ({
           type: 'bar',
@@ -260,9 +259,9 @@ export default {
       };
       this.$api.getBaseApi('substation').then(async (res) => {
         if (!res || !res.results) return;
-        // console.log(res,'飞火流星')
+
         const { count, results } = res;
-        // console.log({count,results},'我爱你')
+
         let robotData = results.map((item, key) => [item.name, 0, item.id]);
         for (let i = 0; i < count; i++) {
           const station = results[i];
@@ -323,6 +322,7 @@ export default {
           this.robotCondition.dataset.source = robotStation;
         } else {
           let before10robotData = robotStation.slice(0, 10);
+
           this.robotCondition.dataset.source = before10robotData;
         }
       });

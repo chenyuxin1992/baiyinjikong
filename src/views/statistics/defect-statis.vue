@@ -69,11 +69,12 @@ export default {
       defectAlarm: {
         color: ['#F7C709', '#F76809'],
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            const alarm1 = this.$random(10);
-            const alarm2 = this.$random(5);
-            return [`变电站${index + 1}`, alarm1, alarm2];
-          }),
+          source: [],
+          //  Array.from({ length: 5 }, (_, index) => {
+          //   const alarm1 = this.$random(10);
+          //   const alarm2 = this.$random(5);
+          //   return [`变电站${index + 1}`, alarm1, alarm2];
+          // }),
         },
         series: ['告警转缺陷', '告警误报率'].map((item, index) => ({
           type: 'bar',
@@ -87,9 +88,9 @@ export default {
         color: ['#F7C709', '#F76809', '#F70909'],
         dataset: {
           source: [
-            { name: '一般', value: 44 },
-            { name: '严重', value: 18 },
-            { name: '危急', value: 4 },
+            // { name: '一般', value: 44 },
+            // { name: '严重', value: 18 },
+            // { name: '危急', value: 4 },
           ],
         },
         series: [
@@ -111,9 +112,9 @@ export default {
         legend: { top: 'middle', left: '75%', align: 'left', orient: 'vertical', itemGap: 10 },
         dataset: {
           source: [
-            { name: '断路器', value: 20 },
-            { name: '隔离开关', value: 15 },
-            { name: '油浸变压器', value: 5 },
+            // { name: '断路器', value: 20 },
+            // { name: '隔离开关', value: 15 },
+            // { name: '油浸变压器', value: 5 },
           ],
         },
         series: [
@@ -128,12 +129,13 @@ export default {
       defectStatis: {
         color: ['#F7C709', '#F76809', '#F70909'],
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            const level1 = this.$random(20);
-            const level2 = this.$random(10);
-            const level3 = this.$random(5);
-            return [`变电站${index + 1}`, level1, level2, level3];
-          }),
+          source: [],
+          //  Array.from({ length: 5 }, (_, index) => {
+          //   const level1 = this.$random(20);
+          //   const level2 = this.$random(10);
+          //   const level3 = this.$random(5);
+          //   return [`变电站${index + 1}`, level1, level2, level3];
+          // }),
         },
         series: Object.entries(ALARM_LEVEL).map(([key, val]) => ({
           type: 'bar',
@@ -381,7 +383,6 @@ export default {
           defectStatisSource.push(defectStatisItem);
           defectCountSource.push(defectCountItem);
         }
-        console.log(defectCountSource, '666666666666666666');
 
         // 缺陷汇总统计超过10个截取前十个，小于10个显示所有
         if (defectStatisSource.length <= 10 && defectStatisSource != '') {
@@ -393,7 +394,6 @@ export default {
         if (defectCountSource.length <= 10 && defectCountSource != '') {
           this.defectAlarm.dataset.source = defectCountSource;
         } else {
-          console.log('一蓑烟雨任平生');
           let before10defectCountSource = defectCountSource.slice(0, 10);
           this.defectAlarm.dataset.source = before10defectCountSource;
         }

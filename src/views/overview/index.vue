@@ -211,6 +211,7 @@ import {
   ALARM_LEVEL,
 } from '@/enum';
 import router from '@/router';
+import element from '@/mixins/element';
 
 export default {
   name: 'Overview',
@@ -280,11 +281,11 @@ export default {
       robotStatis: {
         dataset: {
           source: [
-            { name: '离线', value: 1 },
-            { name: '空闲', value: 1 },
-            { name: '巡视', value: 1 },
-            { name: '充电', value: 1 },
-            { name: '检修', value: 1 },
+            // { name: '离线', value: 1 },
+            // { name: '空闲', value: 1 },
+            // { name: '巡视', value: 1 },
+            // { name: '充电', value: 1 },
+            // { name: '检修', value: 1 },
           ],
         },
         series: {
@@ -301,8 +302,8 @@ export default {
       cameraStatis: {
         dataset: {
           source: [
-            { name: '在线设备', value: 5006 },
-            { name: '离线设备', value: 4 },
+            // { name: '在线设备', value: 5006 },
+            // { name: '离线设备', value: 4 },
           ],
         },
         series: {
@@ -316,22 +317,24 @@ export default {
       taskStatis: {
         dataset: [
           {
-            source: Array.from({ length: 5 }, (_, index) => {
-              const dataObj = Object.keys(TASK_PATROL_TYPE).reduce(
-                (acc, key) => ((acc[key] = this.$random(10)), acc),
-                {}
-              );
-              return { name: `变电站${index + 1}`, ...dataObj };
-            }),
+            source: [],
+            //  Array.from({ length: 5 }, (_, index) => {
+            //   const dataObj = Object.keys(TASK_PATROL_TYPE).reduce(
+            //     (acc, key) => ((acc[key] = this.$random(10)), acc),
+            //     {}
+            //   );
+            //   return { name: `变电站${index + 1}`, ...dataObj };
+            // }),
           },
           {
-            source: Array.from({ length: 5 }, (_, index) => {
-              const dataObj = Object.keys(TASK_STATUS).reduce(
-                (acc, key) => ((acc[key] = this.$random(10)), acc),
-                {}
-              );
-              return { name: `变电站${index + 1}`, ...dataObj };
-            }),
+            source: [],
+            //  Array.from({ length: 5 }, (_, index) => {
+            //   const dataObj = Object.keys(TASK_STATUS).reduce(
+            //     (acc, key) => ((acc[key] = this.$random(10)), acc),
+            //     {}
+            //   );
+            //   return { name: `变电站${index + 1}`, ...dataObj };
+            // }),
           },
         ],
         series: [],
@@ -341,9 +344,9 @@ export default {
         color: ['#F70909', '#F76809', '#F7C709'],
         dataset: {
           source: [
-            { name: '一般', value: 21 },
-            { name: '严重', value: 16 },
-            { name: '危急', value: 4 },
+            // { name: '一般', value: 21 },
+            // { name: '严重', value: 16 },
+            // { name: '危急', value: 4 },
           ],
         },
         series: [
@@ -365,9 +368,9 @@ export default {
         color: ['#F7C709', '#F76809', '#F70909'],
         dataset: {
           source: [
-            { name: '一般', value: 44 },
-            { name: '严重', value: 18 },
-            { name: '危急', value: 4 },
+            // { name: '一般', value: 44 },
+            // { name: '严重', value: 18 },
+            // { name: '危急', value: 4 },
           ],
         },
         series: [
@@ -664,7 +667,6 @@ export default {
     },
     getRobotStatisData() {
       this.$api.getBaseApi('detector', { dec_type__in: '1,2,3' }).then((res) => {
-        console.log(res, 4444999999999999);
         if (!res || !res.results) return;
         let robotStatisMap = Object.entries(ROBOTDETECTOR_STATUS).reduce(
           (acc, [key, val]) => ((acc[key] = { name: val, value: 0, key: key }), acc),
@@ -673,7 +675,6 @@ export default {
         this.statusArray = res.results;
         res.results.forEach((item) => {
           const { status } = item;
-          console.log({ status }, 999);
           if (robotStatisMap[status]) robotStatisMap[status].value += 1;
         });
         this.robotStatis.dataset.source = Object.values(robotStatisMap);
@@ -681,13 +682,11 @@ export default {
     },
     getCameraStatisData() {
       this.$api.getBaseApi('detector', { dec_type: 10, page_size: 6000 }).then((res) => {
-        console.log(res, 6666666666666666666666666666666666666666666666);
         if (!res || !res.results) return;
         let cameraStatis = {
           0: { name: '离线设备', value: 0 },
           1: { name: '在线设备', value: 0 },
         };
-        console.log(cameraStatis, 96100);
         // let cameraMap = Object.entries(PATROLHOST_STATUS).reduce((aa,[key,val]) => ((aa[key] = { name: val,value:0,key:key}),aa))
         for (const item of res.results) {
           const { status } = item;
@@ -697,7 +696,6 @@ export default {
           }
         }
         this.cameraStatis.dataset.source = Object.values(cameraStatis);
-        console.log(this.cameraStatis.dataset.source, 5201314);
       });
     },
     getRangeStatisData() {
@@ -777,25 +775,49 @@ export default {
               );
               for (let i = 0, len = buckets.length; i < len; i++) {
                 const { key, type_count, status_count } = buckets[i];
-                let taskTypeItem = Object.assign(
-                  { name: taskStations[key] || '变电站名称' },
-                  taskTypeMap,
-                  { substation_id: key }
-                );
-                let taskStateItem = Object.assign(
-                  { name: taskStations[key] || '变电站名称' },
-                  taskStateMap,
-                  { substation_id: key }
-                );
+                let stationKeys = Object.keys(taskStations);
+                stationKeys.find((element, index) => {
+                  if (element == key) {
+                    let taskTypeItem = Object.assign(
+                      { name: taskStations[key] || '变电站名称' },
+                      taskTypeMap,
+                      { substation_id: key }
+                    );
+                    let taskStateItem = Object.assign(
+                      { name: taskStations[key] || '变电站名称' },
+                      taskStateMap,
+                      { substation_id: key }
+                    );
 
-                type_count.buckets.forEach((item) => (taskTypeItem[item.key] = item.doc_count));
-                status_count.buckets.forEach((item) => (taskStateItem[item.key] = item.doc_count));
-                taskTypeData.push(taskTypeItem);
-                taskStateData.push(taskStateItem);
+                    type_count.buckets.forEach((item) => (taskTypeItem[item.key] = item.doc_count));
+                    status_count.buckets.forEach(
+                      (item) => (taskStateItem[item.key] = item.doc_count)
+                    );
+                    taskTypeData.push(taskTypeItem);
+                    taskStateData.push(taskStateItem);
+                  }
+                });
+                // let taskTypeItem = Object.assign(
+                //   { name: taskStations[key] || '变电站名称' },
+                //   taskTypeMap,
+                //   { substation_id: key }
+                // );
+                // console.log(taskTypeItem,'舒服舒服')
+                // let taskStateItem = Object.assign(
+                //   { name: taskStations[key] || '变电站名称' },
+                //   taskStateMap,
+                //   { substation_id: key }
+                // );
+                // console.log( type_count.buckets,'陆逊')
+                // type_count.buckets.forEach((item) => (taskTypeItem[item.key] = item.doc_count));
+
+                // status_count.buckets.forEach((item) => (taskStateItem[item.key] = item.doc_count));
+                // taskTypeData.push(taskTypeItem);
+                // taskStateData.push(taskStateItem);
               }
             }
-            console.log(taskTypeData, '天马流星拳');
-            console.log(taskStateData, '螺旋丸');
+            // console.log(taskTypeData, '天马流星拳');
+            // console.log(taskStateData, '螺旋丸');
             // 巡视任务统计类型超过10个截取前十个，小于10个显示所有
             if (taskTypeData <= 10 && taskTypeData != '') {
               this.taskStatis.dataset = [{ source: taskTypeData }, { source: taskStateData }];
