@@ -79,8 +79,8 @@ export default {
         legend: { top: 'middle', left: '75%', orient: 'vertical', itemGap: 10 },
         dataset: {
           source: [
-            { name: '超温告警', value: 16 },
-            { name: '外观异常', value: 10 },
+            // { name: '超温告警', value: 16 },
+            // { name: '外观异常', value: 10 },
           ],
         },
         series: [
@@ -96,9 +96,9 @@ export default {
         legend: { top: 'middle', left: '75%', orient: 'vertical' },
         dataset: {
           source: [
-            { name: '已确认', value: 20 },
-            { name: '未确认', value: 15 },
-            { name: '转缺陷', value: 5 },
+            // { name: '已确认', value: 20 },
+            // { name: '未确认', value: 15 },
+            // { name: '转缺陷', value: 5 },
           ],
         },
         series: [
@@ -113,12 +113,13 @@ export default {
       alarmLevel: {
         color: ['#F7C709', '#F76809', '#F70909'],
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            const level1 = this.$random(20);
-            const level2 = this.$random(10);
-            const level3 = this.$random(5);
-            return [`变电站${index + 1}`, level1, level2, level3];
-          }),
+          source: [],
+          // Array.from({ length: 5 }, (_, index) => {
+          //   const level1 = this.$random(20);
+          //   const level2 = this.$random(10);
+          //   const level3 = this.$random(5);
+          //   return [`变电站${index + 1}`, level1, level2, level3];
+          // }),
         },
         series: Object.entries(ALARM_LEVEL).map(([key, val]) => ({
           type: 'bar',
@@ -139,9 +140,10 @@ export default {
         color: '#F7C709',
         legend: { show: false },
         dataset: {
-          source: Array.from({ length: 10 }, (_, index) => {
-            return [`告警设备${index + 1}`, this.$random(100)];
-          }),
+          source: [],
+          //  Array.from({ length: 10 }, (_, index) => {
+          //   return [`告警设备${index + 1}`, this.$random(100)];
+          // }),
         },
         series: [
           {

@@ -81,8 +81,8 @@ export default {
         },
         dataset: {
           source: [
-            { name: '在线设备', value: 5006 },
-            { name: '离线设备', value: 4 },
+            // { name: '在线设备', value: 5006 },
+            // { name: '离线设备', value: 4 },
           ],
         },
         series: [
@@ -97,13 +97,14 @@ export default {
       },
       cameraDeploy: {
         dataset: {
-          source: Array.from({ length: 5 }, (_, index) => {
-            const dataObj = Object.keys(CAMERA_TYPE).reduce(
-              (acc, key) => ((acc[key] = this.$random(5)), acc),
-              {}
-            );
-            return { name: `变电站${index + 1}`, ...dataObj };
-          }),
+          source: [],
+          // Array.from({ length: 5 }, (_, index) => {
+          //   const dataObj = Object.keys(CAMERA_TYPE).reduce(
+          //     (acc, key) => ((acc[key] = this.$random(5)), acc),
+          //     {}
+          //   );
+          //   return { name: `变电站${index + 1}`, ...dataObj };
+          // }),
         },
         series: Object.entries(CAMERA_TYPE).map(([key, val]) => ({
           type: 'bar',
@@ -145,11 +146,12 @@ export default {
           show: false,
         },
         dataset: {
-          source: Array.from({ length: 10 }, (_, index) => {
-            const online = this.$random(500);
-            const offline = 500 - online;
-            return [`摄像机${index + 1}`, online, offline];
-          }),
+          source: [],
+          // Array.from({ length: 10 }, (_, index) => {
+          //   const online = this.$random(500);
+          //   const offline = 500 - online;
+          //   return [`摄像机${index + 1}`, online, offline];
+          // }),
         },
         series: [
           {
