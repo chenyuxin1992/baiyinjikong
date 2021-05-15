@@ -199,6 +199,7 @@ export default {
       taskModal: false,
       tableLoad: false,
       tableData: [],
+      taskList: [],
       pagination: {
         total: 0,
         current: 1,
@@ -214,9 +215,15 @@ export default {
     this.stationId = params.substation_id;
     this.taskState = params.state;
     this.taskType = params.type;
-
+    //this.onWebsocketPush();
     this.getTableData();
   },
+  mounted() {
+    this.onWebsocketPush();
+  },  
+  beforeDestroy() {
+    this.$bus.$off('stomp');
+  },  
   methods: {
     handleQueryData() {
       this.getTableData();
@@ -254,7 +261,7 @@ export default {
               ..._source,
               id: _id,
               index: i + 1,
-              progress: _source.task_progress || 0,
+              progress: Number(_source.task_progress) || 0,
               taskType: TASK_PATROL_TYPE[_source.type] || '-',
               taskState: TASK_STATUS[_source.status] || '-',
               dataSource: DATA_SOURCE[_source.source] || '-',
@@ -388,8 +395,16 @@ export default {
       }
       this.getTableData();
     },
+    onWebsocketPush() {
+      this.$bus.$on('stomp', (msg) => {
+        const { action, item } = msg;
+        if (action === 'task_station_status' && this.taskList.indexOf(item.task_patrolled_id) > -1 ) {
+          this.getTableData();
+        }
+      });
+    },
     getTableData() {
-      this.tableLoad = true;
+      //this.tableLoad = true;
       let params = [];
       this.stationId && params.push({ match: { substation_id: this.stationId } });
       this.taskName && params.push({ match: { plantask_name: this.taskName } });
@@ -418,6 +433,7 @@ export default {
             return;
           }
           let tableData = [];
+          this.taskList = [];
           for (let i = 0, len = res.hits.hits.length; i < len; i++) {
             const { _id, _source } = res.hits.hits[i];
             const tableIndex = this.pagination.pageSize * (this.pagination.current - 1) + i + 1;
@@ -425,28 +441,28 @@ export default {
               ..._source,
               id: _id,
               index: tableIndex,
-              progress: _source.task_progress || 0,
+              progress: Number(_source.task_progress) || 0,
               taskType: TASK_PATROL_TYPE[_source.type] || '-',
               taskState: TASK_STATUS[_source.status] || '-',
               dataSource: DATA_SOURCE[_source.source] || '-',
-              result: { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
+              //result: { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
+              result: this.tableData[i] ? this.tableData[i].result : { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
             };
             console.log('progress1',dataItem.progress);
-            this.$api
-              .postHistoryApi('historyitems', '_search', {
-                size: 0,
-                query: { bool: { must: [{ match: { task_id: _source.task_id } }] } },
-                _source: { excludes: ['image'] },
-                track_total_hits: true,
-              })
-              .then((res1) => {
-                if (!res1) return;
-                dataItem.result.done = res1.hits.total.value;
-                dataItem.progress = _source.total
-                  ? Math.round((dataItem.result.done / _source.total) * 100)
-                  : 0;
-                console.log('progress2',dataItem.progress);
-              });
+            // this.$api
+            //   .postHistoryApi('historyitems', '_search', {
+            //     size: 0,
+            //     query: { bool: { must: [{ match: { task_id: _source.task_id } }] } },
+            //     _source: { excludes: ['image'] },
+            //     track_total_hits: true,
+            //   })
+            //   .then((res1) => {
+            //     if (!res1) return;
+            //     dataItem.result.done = res1.hits.total.value;
+            //     dataItem.progress = _source.total
+            //       ? Math.round((dataItem.result.done / _source.total) * 100)
+            //       : 0;
+            //   });
             this.$api
               .postHistoryApi('api', 'task_count', { task_id: _source.task_id })
               .then((res2) => {
@@ -454,12 +470,15 @@ export default {
                 dataItem.result = { ...dataItem.result, ...res2 };
               });
             tableData.push(dataItem);
+            this.taskList.push(dataItem.id);
           }
           this.tableData = tableData;
+          // console.log('tableData', tableData);
+          // console.log('taskList',this.taskList),
           this.pagination.total = res.hits.total.value;
         })
         .finally(() => {
-          this.tableLoad = false;
+          //this.tableLoad = false;
           this.taskType = '';
           this.taskState = '';
         });

@@ -662,6 +662,7 @@ export default {
     },
     onWebsocketPush() {
       this.$bus.$on('stomp', (msg) => {
+        console.log('stopm-layout');
         const { action, item } = msg;
         if (action === 'linkageaction_station_result') {
           // 将告警插到列表最前面
@@ -855,6 +856,7 @@ export default {
         this.stompSub = client.subscribe('/exchange/nik_base/patrol', (msg) => {
           if (!msg) return;
           const body = typeof msg.body === 'string' ? JSON.parse(msg.body) : msg.body;
+          console.log('websocketmsg', body);
           this.$bus.$emit('stomp', body);
         });
         this.onWebsocketPush();

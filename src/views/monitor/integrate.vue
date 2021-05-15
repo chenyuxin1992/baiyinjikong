@@ -689,7 +689,7 @@
                 >设置守望位
               </a-button>
               <a-button size="small" type="primary" @click="callWatchPreset(ptzCMD.GET_PRESET, 199)"
-                >调用守望位
+                >开启守望位
               </a-button>
             </div>
             <div class="aside-control__item col-1">
@@ -1333,7 +1333,7 @@ export default {
       let times = 1;
       this.sendCameraCmd(command, code);
       const interval = setInterval(() => {
-        if (times === 6) clearInterval(interval);
+        if (times === 10) clearInterval(interval);
         this.sendCameraCmd(command, code);
         times++;
       }, 5000);

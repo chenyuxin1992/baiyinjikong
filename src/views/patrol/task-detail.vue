@@ -667,7 +667,7 @@ export default {
     };
   },
   created() {
-    this.onWebsocketPush();
+    //this.onWebsocketPush();
 
     this.getDeviceTableData();
     this.getPointTableData();
@@ -675,6 +675,7 @@ export default {
     this.getPatrolSnapshotData();
   },
   mounted() {
+    this.onWebsocketPush();
     // this.$notification.warn({
     //   key: '123',
     //   duration: 0,
@@ -858,6 +859,7 @@ export default {
     },
     onWebsocketPush() {
       this.$bus.$on('stomp', (msg) => {
+        console.log('stopm-taskdetail');
         const { action, item } = msg;
         if (
           action === 'micrometeorology_station_status' &&
@@ -869,11 +871,18 @@ export default {
         }
         if (action === 'task_station_status' && this.taskId === item.task_patrolled_id) {
           const { task_state, task_progress } = item;
-          // result.done = +item.value;
-          this.$store.commit('UPDATE_TASKDATA', {
-            status: task_state,
-            progress: Math.round(task_progress * 100) / 100,
-          });
+          this.taskData.progress = Number(task_progress);
+          this.$api
+            .postHistoryApi('api', 'task_count', { task_id: this.taskId })
+            .then((res) => {
+              this.taskData.result.total = res.total;
+              this.taskData.result.done = res.normal + res.error;
+              this.taskData.result.normal = res.normal;
+              this.taskData.result.alarm = res.alarm;
+              this.taskData.result.error = res.error;
+              this.taskData.result.total = res.defect;
+            });
+          
         }
         if (action === 'task_station_result' && this.taskId === item.task_patrolled_id) {
           const { detector_id } = item;
@@ -885,6 +894,7 @@ export default {
           } 
           else if(!this.deviceId) {
             this.getPointTableData();
+            this.getPatrolSnapshotData();
           }
         }
         if (action === 'task_station_alarm' && this.taskId === item.task_patrolled_id) {
@@ -1284,7 +1294,7 @@ export default {
               video_address1,
               video_address2,
             } = item;
-            console.log('idetector',res.results);
+            //console.log('idetector',res.results);
             if (ROBOT_TYPE[dec_type]) {
               return {
                 id,

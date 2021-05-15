@@ -313,15 +313,16 @@ export default {
                   .finally(() => resolve());
               }
             } else {
-              // 间隔+探测器
+              // 间隔+探测器              
               Promise.all([
-                this.$api.getBaseApi('area_depth', {
+                this.$api.getBaseApi('detector', {
                   substation: dataRef.id,
-                  parent__isnull: true,
+                  dec_type__in: '1,2,3'
                 }),
                 this.$api.getBaseApi('detector', {
                   substation: dataRef.id,
-                  area__isnull: true,
+                  //ordering: 'name',
+                  dec_type__in: '10'
                 }),
               ])
                 .then(([res1, res2]) => {
@@ -329,7 +330,13 @@ export default {
                     ...item,
                     tier: 3, // 树节点层级
                     key: item.id,
-                    checkable: false,
+                    isLeaf: true,
+                    focused: false,
+                    checkable: true,
+                    disabled: item.status !== 1,
+                    class: `sg-state__detector-${item.status}`,
+                    slots: { icon: ROBOT_TYPE[item.dec_type] ? 'robot' : 'camera' },
+                    scopedSlots: { title: 'title' },
                   }));
                   const arr2 = res2.results.map((item) => ({
                     ...item,
@@ -369,63 +376,34 @@ export default {
                   })
                   .finally(() => resolve());
               } else {
-                // 摄像机
+                // 预置位
                 this.$api
-                  .getBaseApi('detector', { substation: dataRef.id, dec_type__in: '10' })
+                  .getBaseApi('preset_depth', { detector: dataRef.id })
                   .then((res) => {
                     if (!res || !res.results) return resolve();
-                    dataRef.children = res.results.map((item) => ({
-                      ...item,
-                      tier: 4, // 树节点层级
-                      key: item.id,
-                      focused: false,
-                      checkable: false,
-                      disabled: item.status !== 1,
-                      class: `sg-state__detector-${item.status}`,
-                      slots: { icon: 'camera' },
-                      scopedSlots: { title: 'title' },
-                    }));
+                    dataRef.children = res.results.map((item) => {
+                      const { detector } = item;
+                      return {
+                        ...item,
+                        tier: 4, // 树节点层级
+                        key: item.id,
+                        isLeaf: true,
+                        checkable: true,
+                        slots: { icon: 'preset' },
+                      };
+                    });
                     this.treeData = [...this.treeData];
                   })
                   .finally(() => resolve());
               }
-            } else {
-              // 设备+探测器
-              Promise.all([
-                this.$api.getBaseApi('area_depth', { parent: dataRef.id }),
-                this.$api.getBaseApi('detector', { area: dataRef.id }),
-              ])
-                .then(([res1, res2]) => {
-                  const arr1 = res1.results.map((item) => ({
-                    ...item,
-                    tier: 4, // 树节点层级
-                    key: item.id,
-                    checkable: false,
-                  }));
-                  const arr2 = res2.results.map((item) => ({
-                    ...item,
-                    tier: 4, // 树节点层级
-                    key: item.id,
-                    isLeaf: true,
-                    focused: false,
-                    checkable: true,
-                    disabled: item.status !== 1,
-                    class: `sg-state__detector-${item.status}`,
-                    slots: { icon: ROBOT_TYPE[item.dec_type] ? 'robot' : 'camera' },
-                    scopedSlots: { title: 'title' },
-                  }));
-                  dataRef.children = [...arr1, ...arr2];
-                  this.treeData = [...this.treeData];
-                })
-                .finally(() => resolve());
-            }
+            } 
             break;
           case 4:
             if (this.treeRadio === 'device') {
               if (this.deviceTree === 1) {
                 // 巡视点位
                 this.$api
-                  .getBaseApi('patrolpoint_depth', {
+                  .getBaseApi('device_depth', {
                     area: dataRef.id,
                     fields: 'id,name,dec_type,detector,device,preset',
                   })
@@ -451,73 +429,41 @@ export default {
                     this.treeData = [...this.treeData];
                   })
                   .finally(() => resolve());
-              } else {
-                // 预置位
-                this.$api
-                  .getBaseApi('preset_depth', { detector: dataRef.id })
-                  .then((res) => {
-                    if (!res || !res.results) return resolve();
-                    dataRef.children = res.results.map((item) => {
-                      const { detector } = item;
-                      return {
-                        ...item,
-                        tier: 5, // 树节点层级
-                        key: item.id,
-                        isLeaf: true,
-                        checkable: true,
-                        slots: { icon: 'preset' },
-                      };
-                    });
-                    this.treeData = [...this.treeData];
-                  })
-                  .finally(() => resolve());
               }              
-            } else {
-              // 探测器
-              this.$api
-                .getBaseApi('detector', { area: dataRef.id })
-                .then((res) => {
-                  if (!res || !res.results) return resolve();
-                  dataRef.children = res.results.map((item) => ({
-                    ...item,
-                    tier: 5, // 树节点层级
-                    key: item.id,
-                    isLeaf: true,
-                    focused: false,
-                    checkable: true,
-                    disabled: item.status !== 1,
-                    class: `sg-state__detector-${item.status}`,
-                    slots: { icon: ROBOT_TYPE[item.dec_type] ? 'robot' : 'camera' },
-                    scopedSlots: { title: 'title' },
-                  }));
-                  this.treeData = [...this.treeData];
-                })
-                .finally(() => resolve());
             }
             break;
           case 5:
             if(this.treeRadio === 'device'){
               if (this.deviceTree === 1) {
-                // 预置位
+                // 巡视点位
                 this.$api
-                  .getBaseApi('preset_depth', { patrolpoint: dataRef.id })
+                  .getBaseApi('patrolpoint_depth', {
+                    device: dataRef.id,
+                    fields: 'id,name,dec_type,detector,device,preset',
+                  })
                   .then((res) => {
                     if (!res || !res.results) return resolve();
-                    dataRef.children = res.results.map((item) => {
-                      const { detector } = item;
-                      return {
-                        ...item,
-                        tier: 6, // 树节点层级
-                        key: item.id,
-                        isLeaf: true,
-                        checkable: true,
-                        slots: { icon: 'preset' },
-                      };
-                    });
+                    dataRef.children = res.results.map((item) => ({
+                      ...item,
+                      tier: 6, // 树节点层级
+                      key: item.id,
+                      focused: false,
+                      checkable: false,
+                      slots: {
+                        icon: item.detector
+                          ? ROBOT_TYPE[item.detector]
+                            ? 'robot'
+                            : item.detector.dec_type === 0 || item.detector.dec_type === 2
+                            ? 'camera'
+                            : 'videorobot'
+                          : 'none',
+                      },
+                      scopedSlots: { title: 'title' },
+                    }));
                     this.treeData = [...this.treeData];
                   })
                   .finally(() => resolve());
-              }
+              }              
             }
             break;
             case 6:

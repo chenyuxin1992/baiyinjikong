@@ -13,7 +13,7 @@
           <span>方案名称:</span>
           <a-input v-model="planName" placeholder="请输入方案名称" :max-length="20" allow-clear />
         </span>
-        <span class="sg-query-item">
+        <!-- <span class="sg-query-item">
           <span>设备区域:</span>
           <a-select
             v-model="deviceArea"
@@ -39,7 +39,7 @@
             placeholder="请选择识别类型"
             allow-clear
           ></a-select>
-        </span>
+        </span> -->
 
         <a-button @click="handleQueryData">查询</a-button>
         <a-button @click="handleExportData">导出</a-button>

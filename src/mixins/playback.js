@@ -100,67 +100,13 @@ export default {
               .finally(() => resolve());
             break;
           case 2:
-            Promise.all([
-              this.$api.getBaseApi('area_depth', { substation: dataRef.id, parent__isnull: true }),
-              this.$api.getBaseApi('detector', {
-                substation: dataRef.id,
-                area__isnull: true,
-                //dec_type__in: '0,2',
-              }),
-            ])
-              .then(([res1, res2]) => {
-                const arr1 = res1.results.map((item) => ({
-                  ...item,
-                  tier: 3, // 树节点层级
-                  key: item.id,
-                  checkable: false,
-                }));
-                const arr2 = res2.results.map((item) => ({
-                  ...item,
-                  tier: 3, // 树节点层级
-                  key: item.id,
-                  isLeaf: true,
-                  checkable: true,
-                  slots: { icon: 'camera' },
-                }));
-                dataRef.children = [...arr1, ...arr2];
-                this.treeData = [...this.treeData];
-              })
-              .finally(() => resolve());
-            break;
-          case 3:
-            Promise.all([
-              this.$api.getBaseApi('area_depth', { parent: dataRef.id }),
-              this.$api.getBaseApi('detector', { area: dataRef.id }),
-            ])
-              .then(([res1, res2]) => {
-                const arr1 = res1.results.map((item) => ({
-                  ...item,
-                  tier: 4, // 树节点层级
-                  key: item.id,
-                  checkable: false,
-                }));
-                const arr2 = res2.results.map((item) => ({
-                  ...item,
-                  tier: 4, // 树节点层级
-                  key: item.id,
-                  isLeaf: true,
-                  checkable: true,
-                  slots: { icon: 'camera' },
-                }));
-                dataRef.children = [...arr1, ...arr2];
-                this.treeData = [...this.treeData];
-              })
-              .finally(() => resolve());
-            break;
-          case 4:
             this.$api
-              .getBaseApi('detector', { area: dataRef.id })
+              .getBaseApi('detector', { substation: dataRef.id })
               .then((res) => {
                 if (!res || !res.results) return resolve();
                 dataRef.children = res.results.map((item) => ({
                   ...item,
-                  tier: 5, // 树节点层级
+                  tier: 3, // 树节点层级
                   key: item.id,
                   isLeaf: true,
                   checkable: true,
