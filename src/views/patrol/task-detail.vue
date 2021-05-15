@@ -51,14 +51,14 @@
           />
           <a-button size="small" @click="handleQueryData('device')">查询</a-button>
           <!-- <a-button size="small" @click="handleExportData('device')">导出</a-button> -->
-          <!-- <span class="switch">
+          <span class="switch">
             <a-switch
               v-model="checkExcept"
               size="small"
               @change="onSwitchChange('defect', $event)"
             />
             <span>只看异常</span>
-          </span> -->
+          </span>
         </div>
         <a-table
           row-key="id"
@@ -91,7 +91,7 @@
           <a-button size="small" @click="handleQueryData('point')">查询</a-button>
           <span class="switch">
             <a-switch v-model="checkAlarm" size="small" @change="onSwitchChange('alarm', $event)" />
-            <span>只看异常</span>
+            <span>只看告警</span>
           </span>
         </div>
         <a-table
@@ -181,7 +181,7 @@
                     detector: item.detector,
                     lightUrl: item.lightUrl,
                     infraredUrl: item.infraredUrl,
-                    autoplay: false,
+                    autoplay: true,
                   }"
                 />
                 <sg-camera
@@ -194,7 +194,7 @@
                     //preset: item.preset,
                     detector: item.detector,
                     gesture: false,
-                    autoplay: false,
+                    autoplay: true,
                   }"
                 />
               </swiper-slide>
@@ -423,7 +423,6 @@ import {
   ROBOT_TYPE,
   TASK_STATUS,
   TASK_VALID,
-  DEVICE_TYPE,
 } from '@/enum';
 
 export default {
@@ -447,13 +446,6 @@ export default {
     }),
     dataSources() {
       return Object.entries(DATA_SOURCE).map(([key, val]) => ({
-        text: val,
-        label: val,
-        value: +key,
-      }));
-    },
-    deviceTypes() {
-      return Object.entries(DEVICE_TYPE).map(([key, val]) => ({
         text: val,
         label: val,
         value: +key,
@@ -498,18 +490,24 @@ export default {
     deviceColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
-        { title: '间隔', dataIndex: 'bay_name', align: 'center', width: 150  ,ellipsis: true},
-        { title: '设备', dataIndex: 'device_name', align: 'center', width: 150 ,ellipsis: true },
-        { title: '设备类型', dataIndex: 'type', align: 'center', width: 120 },
-        { title: '结论', dataIndex: 'conclusion', align: 'center', width: 120 },
-        { title: '操作', align: 'center', width: 120, scopedSlots: { customRender: 'operation' } },
+        { title: '间隔', dataIndex: 'bay_name', align: 'center' },
+        { title: '设备', dataIndex: 'device_name', align: 'center' },
+        { title: '状态', dataIndex: 'taskState', align: 'center', width: 150 },
+        { title: '结论', dataIndex: 'conclusion', align: 'center', width: 150 },
+        { title: '操作', align: 'center', width: 150, scopedSlots: { customRender: 'operation' } },
       ];
     },
     pointColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
-        { title: '部件', dataIndex: 'component_name', align: 'center', width: 100 ,ellipsis: true},
-        { title: '巡视内容', dataIndex: 'patrolpoint_name', align: 'center', width: 110 ,ellipsis: true},
+        { title: '部件', dataIndex: 'component_name', align: 'center', width: 100, ellipsis: true },
+        {
+          title: '巡视内容',
+          dataIndex: 'patrolpoint_name',
+          align: 'center',
+          width: 110,
+          ellipsis: true,
+        },
         { title: '巡视结论', dataIndex: 'conclusion', align: 'center', width: 110 },
         { title: '识别结果', dataIndex: 'value_disp', align: 'center', width: 100 },
         { title: '原始值', dataIndex: 'value', align: 'center', width: 90 },
@@ -601,9 +599,9 @@ export default {
       pointData: [],
       pointPage: { total: 0, current: 1, pageSize: 5, size: 'small' },
       detectorIndex: 0,
-      detectorList: Array.from({ length: 1 }, (_, index) => ({
+      detectorList: Array.from({ length: 3 }, (_, index) => ({
         id: ++index,
-        name: `摄像机${index}`,
+        name: `摄像机${index + 1}`,
         status: Math.random() > 0.5,
         url: '',
       })),
@@ -663,7 +661,7 @@ export default {
       alarmLevel: undefined,
       alarmData: [],
       alarmPage: { total: 0, current: 1, pageSize: 5, size: 'small' },
-      deviceList: [], 
+      deviceList: [],
     };
   },
   created() {
@@ -718,7 +716,7 @@ export default {
           if (!res) return;
           FileSaver.saveAs(
             `https://${location.hostname}:8443/html/shares/tar/${res}`,
-            this.taskData.plantask_name + this.taskData.start_time + '.tar'
+            this.taskData.plantask_name + '20210318.tar'
           );
         });
       } else {
@@ -732,7 +730,7 @@ export default {
             track_total_hits: true,
           })
           .then((res) => {
-            //if (!res || !res.hits.total.value) return;
+            if (!res || !res.hits.total.value) return;
             let allowExport = true;
             for (let i = 0; i < res.hits.hits.length; i++) {
               const { _source } = res.hits.hits[i];
@@ -751,7 +749,7 @@ export default {
                   if (!res) return;
                   FileSaver.saveAs(
                     `https://${location.hostname}:8443/html/shares/report/${res}`,
-                    res
+                    '任务巡视报告.docx'
                   );
                 });
             } else {
@@ -877,13 +875,12 @@ export default {
         }
         if (action === 'task_station_result' && this.taskId === item.task_patrolled_id) {
           const { detector_id } = item;
-          if(this.deviceList.indexOf(detector_id) == -1) {
+          if (this.deviceList.indexOf(detector_id) == -1) {
             this.getDeviceTableData();
           }
           if (this.deviceId === detector_id) {
             this.getPointTableData(this.deviceId);
-          } 
-          else if(!this.deviceId) {
+          } else if (!this.deviceId) {
             this.getPointTableData();
           }
         }
@@ -955,7 +952,11 @@ export default {
       } else {
         this.pointSource = undefined;
       }
-      this.getPointTableData();
+      if (this.deviceId) {
+        this.getPointTableData(this.deviceId);
+      } else {
+        this.getPointTableData();
+      }
     },
     onAlarmTableChange(pagination, filters) {
       this.alarmPage.current = pagination.current;
@@ -1051,43 +1052,50 @@ export default {
         });
     },
     getDeviceTableData() {
-      //this.deviceLoad = true;
+      this.deviceLoad = true;
       let params = [{ match: { task_id: this.taskId } }];
       //this.checkExcept && params.push({ match: { status: 2 } }, { match: { status: 4 } });
       this.deviceName && params.push({ match: { device_name: this.deviceName } });
       this.$api
         .postHistoryApi('historyitems', '_search', {
-          // from: this.devicePage.pageSize * (this.devicePage.current - 1),
-          // size: this.devicePage.pageSize,
+          from: this.devicePage.pageSize * (this.devicePage.current - 1),
+          size: this.devicePage.pageSize,
           query: { bool: { must: params } },
-          collapse: {field: 'device_id'},
+          collapse: { field: 'device_id' },
+          aggs: {
+            device_count: {
+              cardinality: {
+                field: 'device_id',
+              },
+            },
+          },
           // _source: { excludes: ['image'] },
           //track_total_hits: true,
         })
         .then((res) => {
           //if (!res || !res.hits.total.value) return;
+          // console.log('hahahhaaa',res);
           this.deviceList = [];
           this.deviceData = res.hits.hits.map((item, index) => {
             const source = item._source;
-            const tableIndex = this.devicePage.pageSize * (this.devicePage.current - 1) + index + 1;
+            let tableIndex = this.devicePage.pageSize * (this.devicePage.current - 1) + index + 1;
             this.deviceList.push(source.device_id);
             return {
               ...source,
               id: item._id,
               index: tableIndex,
               taskState: TASK_STATUS[source.status] || '-',
-              conclusion: source.valid === 1 ? '正常' : '异常',
-              type: DEVICE_TYPE[source.device_type] || '-',
+              conclusion: source.valid === 1 ? '识别正常' : '识别异常',
             };
           });
-          this.devicePage.total = this.deviceList.length;
+          this.devicePage.total = res.aggregations.device_count.value;
         })
         .finally(() => {
-          //this.deviceLoad = false;
+          this.deviceLoad = false;
         });
-    },        
+    },
     getPointTableData(deviceId) {
-      //this.pointLoad = true;
+      this.pointLoad = true;
       let mustnotParams = [];
       this.checkAlarm && mustnotParams.push({ match: { valid: 1 } });
       let mustParams = [{ match: { task_id: this.taskId } }];
@@ -1120,7 +1128,7 @@ export default {
           this.pointPage.total = res.hits.total.value;
         })
         .finally(() => {
-          //this.pointLoad = false;
+          this.pointLoad = false;
         });
     },
     getAlarmTableData() {
@@ -1258,7 +1266,7 @@ export default {
                 status,
                 type: 'camera',
                 detector: item.detector,
-                //preset: _.omitBy(item, _.isObject),
+                preset: _.omitBy(item, _.isObject),
               };
             }
           });
@@ -1269,64 +1277,12 @@ export default {
               player && player.playVideo();
             }
           });
-        }).catch(() => {
-
-        this.$api.getBaseApi('detector', { substation: this.substationId }).then((res) => {
-          console.log('detector',res.results);
-          if (!res || !res.count) return;
-          const detectors = res.results.map((item) => {
-            const {
-              id,
-              name,
-              status,
-              dec_type,
-              out_code,
-              video_address1,
-              video_address2,
-            } = item;
-            console.log('idetector',res.results);
-            if (ROBOT_TYPE[dec_type]) {
-              return {
-                id,
-                name,
-                status,
-                type: 'robot',
-                detector: item.detector,
-                lightUrl: video_address1,
-                infraredUrl: video_address2,
-              };
-            } else {
-              const [did, cno] = out_code.split('_');
-              const url = `wss://${location.hostname}:8443/media/${did}/${cno}.flv`;
-              return {
-                id,
-                did,
-                cno,
-                url,
-                name,
-                status,
-                type: 'camera',
-                detector: item.detector,
-                //preset: _.omitBy(item, _.isObject),
-              };
-            }
-          });
-          this.detectorList = _.uniqBy(detectors, 'id');
-          console.log('detectorList', this.detectorList);
-          this.$nextTick(() => {
-            if (this.detectorList.length > 0) {
-              const player = this.$refs[`player-0`][0];
-              player && player.playVideo();
-            }
-          });
-        });        
-
-          
         });
       });
     },
     getStationDetectorData() {
       this.$api.getBaseApi('plantask_depth', { id: this.plantaskId }).then((res) => {
+        console.log(res.results[0]);
         // if (!res || !res.count) return;
         const { substation, patrolhost } = res.results[0];
         this.mapHost = patrolhost;
@@ -1334,23 +1290,18 @@ export default {
           this.mapUrl = `https://${location.hostname}:8443/html/shares/${substation.map_path}`;
         }
       });
-      this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }).then( (res) => {
-        if (res && res.count > 0) {
-          this.mapRobots = res.results;
+      Promise.all([
+        this.$api.getBaseApi('patrolpoint', { substation: this.substationId }),
+        this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }),
+      ]).then(([res1, res2]) => {
+        console.log([res1, res2], '黑猫警长');
+        if (res1 && res1.count) {
+          this.mapPoints = res1.results;
         }
-      })
-      // Promise.all([
-      //   this.$api.getBaseApi('patrolpoint', { substation: this.substationId }),
-      //   this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }),
-      // ]).then(([res1, res2]) => {
-      //   console.log([res1, res2], '黑猫警长');
-      //   if (res1 && res1.count) {
-      //     this.mapPoints = res1.results;
-      //   }
-      //   if (res2 && res2.count) {
-      //     this.mapRobots = res2.results;
-      //   }
-      // });
+        if (res2 && res2.count) {
+          this.mapRobots = res2.results;
+        }
+      });
     },
   },
 };
