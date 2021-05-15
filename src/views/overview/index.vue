@@ -317,22 +317,24 @@ export default {
       taskStatis: {
         dataset: [
           {
-            source: Array.from({ length: 5 }, (_, index) => {
-              const dataObj = Object.keys(TASK_PATROL_TYPE).reduce(
-                (acc, key) => ((acc[key] = this.$random(10)), acc),
-                {}
-              );
-              return { name: `变电站${index + 1}`, ...dataObj };
-            }),
+            source: [],
+            //  Array.from({ length: 5 }, (_, index) => {
+            //   const dataObj = Object.keys(TASK_PATROL_TYPE).reduce(
+            //     (acc, key) => ((acc[key] = this.$random(10)), acc),
+            //     {}
+            //   );
+            //   return { name: `变电站${index + 1}`, ...dataObj };
+            // }),
           },
           {
-            source: Array.from({ length: 5 }, (_, index) => {
-              const dataObj = Object.keys(TASK_STATUS).reduce(
-                (acc, key) => ((acc[key] = this.$random(10)), acc),
-                {}
-              );
-              return { name: `变电站${index + 1}`, ...dataObj };
-            }),
+            source: [],
+            //  Array.from({ length: 5 }, (_, index) => {
+            //   const dataObj = Object.keys(TASK_STATUS).reduce(
+            //     (acc, key) => ((acc[key] = this.$random(10)), acc),
+            //     {}
+            //   );
+            //   return { name: `变电站${index + 1}`, ...dataObj };
+            // }),
           },
         ],
         series: [],
@@ -342,9 +344,9 @@ export default {
         color: ['#F70909', '#F76809', '#F7C709'],
         dataset: {
           source: [
-            { name: '一般', value: 21 },
-            { name: '严重', value: 16 },
-            { name: '危急', value: 4 },
+            // { name: '一般', value: 21 },
+            // { name: '严重', value: 16 },
+            // { name: '危急', value: 4 },
           ],
         },
         series: [
@@ -366,9 +368,9 @@ export default {
         color: ['#F7C709', '#F76809', '#F70909'],
         dataset: {
           source: [
-            { name: '一般', value: 44 },
-            { name: '严重', value: 18 },
-            { name: '危急', value: 4 },
+            // { name: '一般', value: 44 },
+            // { name: '严重', value: 18 },
+            // { name: '危急', value: 4 },
           ],
         },
         series: [
