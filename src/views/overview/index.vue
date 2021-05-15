@@ -281,11 +281,11 @@ export default {
       robotStatis: {
         dataset: {
           source: [
-            { name: '离线', value: 1 },
-            { name: '空闲', value: 1 },
-            { name: '巡视', value: 1 },
-            { name: '充电', value: 1 },
-            { name: '检修', value: 1 },
+            // { name: '离线', value: 1 },
+            // { name: '空闲', value: 1 },
+            // { name: '巡视', value: 1 },
+            // { name: '充电', value: 1 },
+            // { name: '检修', value: 1 },
           ],
         },
         series: {
@@ -302,8 +302,8 @@ export default {
       cameraStatis: {
         dataset: {
           source: [
-            { name: '在线设备', value: 5006 },
-            { name: '离线设备', value: 4 },
+            // { name: '在线设备', value: 5006 },
+            // { name: '离线设备', value: 4 },
           ],
         },
         series: {
