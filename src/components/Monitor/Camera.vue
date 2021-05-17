@@ -11,7 +11,7 @@
           @click="handleRecordVideo"
         /> -->
         <a-icon v-if="screenshot" type="picture" @click="handleScreenshot" />
-        <a-icon type="close-circle" @click="handleCloseVideo" />
+        <!-- <a-icon type="close-circle" @click="handleCloseVideo" /> -->
       </span>
     </header>
     <div

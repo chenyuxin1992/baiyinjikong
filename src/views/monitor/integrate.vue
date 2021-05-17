@@ -959,8 +959,8 @@ export default {
   },
   beforeDestroy() {
     this.$bus.$off('stomp');
-    this.$bus.$off('cancelled');
-    this.$bus.$off('identified');
+    //this.$bus.$off('cancelled');
+    //this.$bus.$off('identified');
     if (this.detectorPolling) {
       clearInterval(this.detectorPolling);
       this.detectorPolling = null;
@@ -1024,6 +1024,40 @@ export default {
         if (action === 'detector_station_status' && item.type === 2) {
           const node = this.treeLoaded.find((node) => node.id === item.detector_id);
           node && (node.state = `sg-state__detector-${item.value}`);
+        }
+        if (action === 'detector_station_status' && item.detector_id == this.robotId) {
+          switch (item.type) {
+            case 1:
+              if(item.value == 1){
+                this.$message.warn('机器人电池电量低！');
+              }
+              break;
+            case 2:
+              if(item.value == 1){
+                this.$message.warn('机器人通信状态异常！');
+              }
+              break;
+            case 3:
+              if(item.value == 1){
+                this.$message.warn('机器人超声停障！');
+              }
+              break;
+            case 4:
+              if(item.value == 1){
+                this.$message.warn('机器人驱动异常！');
+              }
+              break;
+            case 21:
+              if(item.value == 1){
+                this.$message.warn('机器人故障报警！');
+              }
+              break;
+            case 61:
+              this.robotModel.robotMode == item.value;
+              break;
+            default:
+              break;
+          }
         }
       });
     },
@@ -1239,11 +1273,13 @@ export default {
         this.$bus.$emit('identify');
         if (!this.userIdentify) {
           this.userIdentify = true;
+          this.$bus.$off('cancelled');
           this.$bus.$on('cancelled', () => {
             if (cmd === RobotSelf.SWITCH_MODE) {
               this.robotModel.robotMode = this.robotModel.robotModePrev;
             }
           });
+          this.$bus.$off('identified');
           this.$bus.$on('identified', () => {
             if (cmd === RobotSelf.SWITCH_MODE) {
               this.robotModel.robotModePrev = val;
@@ -1256,13 +1292,15 @@ export default {
                 value: val,
                 command: cmd,
                 direction: dir,
-                syn: '机器人控制指令下发',
+                syn: '机器人控制指令下发1',
               })
               .then(() => {
                 this.$message.success('机器人控制指令发送成功！');
+                this.userIdentify = false;
               })
               .catch(() => {
                 this.$message.error('机器人控制指令发送失败！');
+                this.userIdentify = false;
               });
           });
         }
@@ -1275,13 +1313,15 @@ export default {
             value: val,
             command: cmd,
             direction: dir,
-            syn: '机器人控制指令下发',
+            syn: '机器人控制指令下发2',
           })
           .then(() => {
             this.$message.success('机器人控制指令发送成功！');
+            this.userIdentify = false;
           })
           .catch(() => {
             this.$message.error('机器人控制指令发送失败！');
+            this.userIdentify = false;
           });
       }
     },

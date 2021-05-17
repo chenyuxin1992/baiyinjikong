@@ -3,7 +3,7 @@
     <header class="robot-header">
       <span>{{ title }}</span>
       <span class="robot-header__action">
-        <a-icon type="close-circle" @click="handleCloseVideo" />
+        <!-- <a-icon type="close-circle" @click="handleCloseVideo" /> -->
       </span>
     </header>
     <div class="robot-wrapper">

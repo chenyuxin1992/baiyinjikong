@@ -57,10 +57,11 @@ export default new Vuex.Store({
       storage.set('userData', userData);
     },
     SET_TASKDATA(state, taskData) {
-      const { start_time, end_time } = taskData;
+      const { start_time, end_time} = taskData;
       state.taskData = {
         ...taskData,
         duration: moment(end_time).to(moment(start_time), true),
+        done: taskData.result.normal + taskData.result.error,
       };
       storage.set('taskData', state.taskData);
     },

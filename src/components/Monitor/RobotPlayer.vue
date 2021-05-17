@@ -594,8 +594,8 @@ export default {
   },
   beforeDestroy() {
     this.destroyVideo();
-    this.$bus.$off('cancelled');
-    this.$bus.$off('identified');
+    //this.$bus.$off('cancelled');
+    //this.$bus.$off('identified');
   },
   methods: {
     onRobotModeSelect(val) {
@@ -725,11 +725,13 @@ export default {
         this.$bus.$emit('identify');
         if (!this.userIdentify) {
           this.userIdentify = true;
+          this.$bus.$off('cancelled');
           this.$bus.$on('cancelled', () => {
             if (cmd === RobotSelf.SWITCH_MODE) {
               this.robotModel.robotMode = this.robotModel.robotModePrev;
             }
           });
+          this.$bus.$off('identified');
           this.$bus.$on('identified', () => {
             if (cmd === RobotSelf.SWITCH_MODE) {
               this.robotModel.robotModePrev = val;

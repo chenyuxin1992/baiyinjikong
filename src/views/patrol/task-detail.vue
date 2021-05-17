@@ -16,7 +16,7 @@
               <span>总测点</span><span>{{ taskData.result.total }}</span>
             </li>
             <li>
-              <span>已巡视</span><span>{{ taskData.result.done }}</span>
+              <span>已巡视</span><span>{{ taskData.done }}</span>
             </li>
             <li class="normal">
               <span>正常</span><span>{{ taskData.result.normal }}</span>
@@ -259,10 +259,10 @@
             <li
               v-for="(item, index) in detectorList"
               :key="index"
-              :class="[item.status ? 'online' : 'offline', { active: detectorIndex === index }]"
+              :class="[item.textcolour ? 'online-textcolour' : item.status ? 'online' : 'offline', { active: detectorIndex === index }]"
               @click="handleSelectDetector(index)"
             >
-              <sg-icon name="robot" />
+              <sg-icon name="camrea" />
               <span>{{ item.name }}</span>
             </li>
           </ul>
@@ -617,6 +617,7 @@ export default {
           prevEl: '.swiper-button-prev.swiper-monitor',
         },
       },
+      detectorIdlist: [],
       snapshotList: [],
       snapshotPage: { current: 1, pageSize: 20 },
       snapshotOptions: {
@@ -850,8 +851,10 @@ export default {
     },
     handleSelectDetector(index) {
       const prevPlayer = this.$refs[`player-${this.detectorIndex}`][0];
+      console.log('prevPlayer-index', prevPlayer);
       prevPlayer && prevPlayer.pauseVideo();
       const nextPlayer = this.$refs[`player-${index}`][0];
+      console.log('nextPlayer-index', nextPlayer.autoplay);
       nextPlayer && nextPlayer.playVideo();
       this.detectorIndex = index;
       const monitorSwiper = this.$refs.monitorSwiper && this.$refs.monitorSwiper.$swiper;
@@ -877,7 +880,7 @@ export default {
             .postHistoryApi('api', 'task_count', { task_id: this.taskId })
             .then((res) => {
               //this.taskData.result.total = res.total;
-              this.taskData.result.done = res.normal + res.error;
+              this.taskData.done = res.normal + res.error;
               this.taskData.result.normal = res.normal;
               this.taskData.result.alarm = res.alarm;
               this.taskData.result.error = res.error;
@@ -886,15 +889,23 @@ export default {
           
         }
         if (action === 'task_station_result' && this.taskId === item.task_patrolled_id) {
-          const { detector_id } = item;
+          const { detector_id , device_id} = item;
           if (this.deviceList.indexOf(detector_id) == -1) {
             this.getDeviceTableData();
           }
-          if (this.deviceId == detector_id) {
+          if (this.deviceId == device_id) {
             this.getPointTableData(this.deviceId);
+            this.getPatrolSnapshotData();
           } else {
             this.getPointTableData();
             this.getPatrolSnapshotData();
+          }
+          if (this.detectorIdlist.indexOf(detector_id) != -1){
+            let number = this.detectorIdlist.indexOf(detector_id);
+            this.detectorList[number].textcolour = 1;
+            setTimeout(() => {
+              this.detectorList[number].textcolour = 0;
+            }, 5000);
           }
         }
         if (action === 'task_station_alarm' && this.taskId === item.task_patrolled_id) {
@@ -1311,6 +1322,9 @@ export default {
           });        
           this.detectorList = robotList.concat(detectors);
           this.detectorList = _.uniqBy(detectors, 'id');
+          this.detectorIdlist = this.detectorList.map(obj => {
+            return obj.id;
+          });          
           this.$nextTick(() => {
             if (this.detectorList.length > 0) {
               const player = this.$refs[`player-0`][0];
@@ -1360,7 +1374,9 @@ export default {
             }
           });
           this.detectorList = _.uniqBy(detectors, 'id');
-          console.log('detectorList', this.detectorList);
+          this.detectorIdlist = this.detectorList.map(obj => {
+            return obj.id;
+          });                    
           this.$nextTick(() => {
             if (this.detectorList.length > 0) {
               const player = this.$refs[`player-0`][0];
@@ -1594,6 +1610,12 @@ export default {
           color: @link-color;
         }
       }
+      &.online-textcolour {
+        color: red;
+        .anticon {
+          color: @link-color;
+        }
+      }      
       &.offline {
         color: @disabled-color;
         pointer-events: none;
