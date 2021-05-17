@@ -603,7 +603,7 @@ export default {
       detectorIndex: 0,
       detectorList: Array.from({ length: 1 }, (_, index) => ({
         id: ++index,
-        name: `摄像机${index}`,
+        name: `摄像机列表加载中...`,
         status: Math.random() > 0.5,
         url: '',
       })),
@@ -871,16 +871,17 @@ export default {
         }
         if (action === 'task_station_status' && this.taskId === item.task_patrolled_id) {
           const { task_state, task_progress } = item;
-          this.taskData.progress = Number(task_progress);
+          let stringProgress = task_progress.replace("%","");
+          this.taskData.progress = Number(stringProgress);
           this.$api
             .postHistoryApi('api', 'task_count', { task_id: this.taskId })
             .then((res) => {
-              this.taskData.result.total = res.total;
+              //this.taskData.result.total = res.total;
               this.taskData.result.done = res.normal + res.error;
               this.taskData.result.normal = res.normal;
               this.taskData.result.alarm = res.alarm;
               this.taskData.result.error = res.error;
-              this.taskData.result.total = res.defect;
+              this.taskData.result.defect = res.defect;
             });
           
         }
@@ -889,9 +890,9 @@ export default {
           if (this.deviceList.indexOf(detector_id) == -1) {
             this.getDeviceTableData();
           }
-          if (this.deviceId === detector_id) {
+          if (this.deviceId == detector_id) {
             this.getPointTableData(this.deviceId);
-          } else if (!this.deviceId) {
+          } else {
             this.getPointTableData();
             this.getPatrolSnapshotData();
           }
@@ -1227,61 +1228,88 @@ export default {
         if (!res || !res.count) return;
         const { device_level, device_list } = res.results[0];
         let data;
-        switch (device_level) {
-          case 1:
-            data = { patrolpoint__device__area__parent_id__in: device_list };
-            break;
-          case 2:
-            data = { patrolpoint__device__area_id__in: device_list };
-            break;
-          case 3:
-            data = { patrolpoint_id__in: device_list };
-            break;
-          case 4:
-            data = { patrolpoint__device_id__in: device_list };
-            break;
-          default:
-            break;
-        }
+        data = { patrolpoint_id__in: device_list };
+        // switch (device_level) {
+        //   case 1:
+        //     data = { patrolpoint__device__area__parent_id__in: device_list };
+        //     break;
+        //   case 2:
+        //     data = { patrolpoint__device__area_id__in: device_list };
+        //     break;
+        //   case 3:
+        //     data = { patrolpoint_id__in: device_list };
+        //     break;
+        //   case 4:
+        //     data = { patrolpoint__device_id__in: device_list };
+        //     break;
+        //   default:
+        //     break;
+        // }
         this.$api.getBaseApi('preset_depth', data).then((res) => {
-          console.log(res);
-          if (!res || !res.count) return;
-          const detectors = res.results.map((item) => {
-            const {
-              id,
-              name,
-              status,
-              dec_type,
-              out_code,
-              video_address1,
-              video_address2,
-            } = item.detector;
-            if (ROBOT_TYPE[dec_type]) {
-              return {
+          const detectors = [];
+          if (res && res.count) {
+            detectors = res.results.map((item) => {
+              const {
                 id,
                 name,
                 status,
-                type: 'robot',
-                detector: item.detector,
-                lightUrl: video_address1,
-                infraredUrl: video_address2,
-              };
-            } else {
-              const [did, cno] = out_code.split('_');
-              const url = `wss://${location.hostname}:8443/media/${did}/${cno}.flv`;
-              return {
+                dec_type,
+                out_code,
+                video_address1,
+                video_address2,
+              } = item.detector;
+              if (ROBOT_TYPE[dec_type]) {
+                return {
+                  id,
+                  name,
+                  status,
+                  type: 'robot',
+                  detector: item.detector,
+                  lightUrl: video_address1,
+                  infraredUrl: video_address2,
+                };
+              } else {
+                const [did, cno] = out_code.split('_');
+                const url = `wss://${location.hostname}:8443/media/${did}/${cno}.flv`;
+                return {
+                  id,
+                  did,
+                  cno,
+                  url,
+                  name,
+                  status,
+                  type: 'camera',
+                  detector: item.detector,
+                  //preset: _.omitBy(item, _.isObject),
+                };
+              }
+            })
+          }
+          this.$api.getBaseApi('detector', { substation: this.substationId, dec_type__in: '1,2,3' }).then((res) => {
+            if (!res || !res.count) return;
+            const robotList = res.results.map((item) => {
+              const {
                 id,
-                did,
-                cno,
-                url,
                 name,
                 status,
-                type: 'camera',
-                detector: item.detector,
-                //preset: _.omitBy(item, _.isObject),
-              };
-            }
-          });
+                dec_type,
+                out_code,
+                video_address1,
+                video_address2,
+              } = item;
+              //console.log('idetector',res.results);
+                return {
+                  id,
+                  name,
+                  status,
+                  type: 'robot',
+                  detector: item.detector,
+                  lightUrl: video_address1,
+                  infraredUrl: video_address2,
+                };
+            });
+          });        
+          this.detectorList = robotList.concat(detectors);
           this.detectorList = _.uniqBy(detectors, 'id');
           this.$nextTick(() => {
             if (this.detectorList.length > 0) {

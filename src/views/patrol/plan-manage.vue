@@ -167,7 +167,7 @@
               placeholder="请选择巡视设备层级"
             ></a-select>
           </a-form-model-item>
-          <a-form-model-item prop="patrolhost_id" label="选择巡视主机">
+          <a-form-model-item prop="patrolhost_id" label="选择巡视主机" required>
             <a-select
               v-model="planForm.patrolhost_id"
               :options="patrolHosts"
@@ -679,6 +679,7 @@ export default {
         timingtype: [{ required: true, message: '请选择任务执行周期' }],
         patrol_type: [{ required: true, message: '请选择巡视方案类型' }],
         device_level: [{ required: true, message: '请选择巡视设备层级' }],
+        patrolhost_id: [{ required: true, message: '请选择巡视主机' }],
       },
       auditForm: {
         checkman: '',
@@ -780,7 +781,8 @@ export default {
             priority: 3,
             createtime: this.$moment(),
             execute_id: '',
-            patrol_type: 0,
+            patrol_type: 1,
+            checkstate: 1,
             device_list: '',
             device_level: undefined,
             substation_id: undefined,
@@ -1131,7 +1133,7 @@ export default {
         const { device_level } = this.planForm;
         switch (dataRef.tier) {
           case 0:
-            if (device_level === 1) return resolve();
+            //if (device_level === 1) return resolve();
             this.$api
               .getBaseApi('area', { parent: dataRef.id })
               .then((res) => {
@@ -1146,7 +1148,7 @@ export default {
               .finally(() => resolve());
             break;
           case 1:
-            if (device_level === 2) return resolve();
+            //if (device_level === 2) return resolve();
             this.$api
               .getBaseApi('device', { area: dataRef.id })
               .then((res) => {
@@ -1161,7 +1163,7 @@ export default {
               .finally(() => resolve());
             break;
           case 2:
-            if (device_level === 4) return resolve();
+            //if (device_level === 4) return resolve();
             this.$api
               .getBaseApi('patrolpoint', { device: dataRef.id })
               .then((res) => {

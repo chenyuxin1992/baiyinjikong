@@ -17,7 +17,7 @@
       </div>
 
       <a-row class="sg-row wrapper" :gutter="10">
-        <a-col class="sg-col" :span="16">
+        <a-col class="sg-col" :span="24">
           <a-row class="sg-row" :gutter="10">
             <a-col class="sg-col" :span="12">
               <div class="sg-view md">
@@ -46,14 +46,14 @@
             </div>
           </div>
         </a-col>
-        <a-col class="sg-col" :span="8">
+        <!-- <a-col class="sg-col" :span="8">
           <div class="sg-view">
             <div class="sg-view-title">摄像机在线时长统计</div>
             <div class="sg-view-content">
               <sg-chart type="bar" :options="cameraOnline" />
             </div>
           </div>
-        </a-col>
+        </a-col> -->
       </a-row>
     </a-col>
   </a-row>

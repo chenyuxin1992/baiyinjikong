@@ -736,7 +736,7 @@
               <li
                 v-for="item in cameraModel.presetList"
                 :key="item.id"
-                @dblclick="callPresetpoint(item.ptz_h, item.ptz_v, item.ipc_z)"
+                @click="callPresetpoint(item.ptz_h, item.ptz_v, item.ipc_z)"
               >
                 {{ item.name }}
               </li>

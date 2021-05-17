@@ -448,7 +448,7 @@ export default {
               //result: { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
               result: this.tableData[i] ? this.tableData[i].result : { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
             };
-            console.log('progress1',dataItem.progress);
+            //console.log('progress1',dataItem.progress);
             // this.$api
             //   .postHistoryApi('historyitems', '_search', {
             //     size: 0,

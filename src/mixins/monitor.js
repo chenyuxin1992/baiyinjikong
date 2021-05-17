@@ -333,7 +333,7 @@ export default {
                     isLeaf: true,
                     focused: false,
                     checkable: true,
-                    disabled: item.status !== 1,
+                    disabled: item.status == 0,
                     class: `sg-state__detector-${item.status}`,
                     slots: { icon: ROBOT_TYPE[item.dec_type] ? 'robot' : 'camera' },
                     scopedSlots: { title: 'title' },

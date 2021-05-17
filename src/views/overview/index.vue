@@ -38,7 +38,7 @@
                 <span>变电站</span>
                 <span class="station-item__count">{{ basicStatis.station.count }}</span>
                 <a-popover
-                  title="变电站详情"
+                  title="变电站列表"
                   trigger="click"
                   placement="rightTop"
                   overlay-class-name="sg-popover station"
@@ -64,7 +64,7 @@
                 <span>机器人</span>
                 <span class="station-item__count">{{ basicStatis.robot.count }}</span>
                 <a-popover
-                  title="机器人详情"
+                  title="机器人列表"
                   trigger="click"
                   placement="rightTop"
                   overlay-class-name="sg-popover station"
@@ -90,7 +90,7 @@
                 <span>摄像机</span>
                 <span class="station-item__count">{{ basicStatis.camera.count }}</span>
                 <a-popover
-                  title="摄像机详情"
+                  title="摄像机列表"
                   trigger="click"
                   placement="rightTop"
                   overlay-class-name="sg-popover station"
@@ -254,7 +254,7 @@ export default {
           columns: [
             { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
             { title: '机器人名称', dataIndex: 'name', align: 'center', width: 200 },
-            { title: '机器人详情', dataIndex: 'detail', align: 'center', width: 200 },
+            { title: '生产厂家', dataIndex: 'manufacturer', align: 'center', width: 200 },
           ],
         },
         camera: {
@@ -264,7 +264,7 @@ export default {
           columns: [
             { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
             { title: '摄像机名称', dataIndex: 'name', align: 'center', width: 200 },
-            { title: '摄像机详情', dataIndex: 'detail', align: 'center', width: 200 },
+            { title: '所属变电站', dataIndex: 'substation.name', align: 'center', width: 200 },
           ],
         },
         station: {
@@ -274,7 +274,7 @@ export default {
           columns: [
             { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
             { title: '变电站名称', dataIndex: 'name', align: 'center', width: 200 },
-            { title: '变电站详情', dataIndex: 'detail', align: 'center', width: 200 },
+            // { title: '变电站信息', dataIndex: 'parent', align: 'center', width: 200 },
           ],
         },
       },
@@ -505,10 +505,10 @@ export default {
     },
     // 机器人工况查询
     getkeys(val) {
-      this.$router.push({
-        path: 'patrol/robot-manage',
-        query: { status: val.data.key },
-      });
+      // this.$router.push({
+      //   path: 'patrol/robot-manage',
+      //   query: { status: val.data.key },
+      // });
     },
     // 缺陷等级统计
     getLevel(val) {
@@ -624,7 +624,7 @@ export default {
           if (!this.basicStatis.camera.data.length) {
             this.basicStatis.camera.loading = true;
             this.$api
-              .getBaseApi('detector', { dec_type: 10, page_size: 6000 })
+              .getBaseApi('detector_depth', { ordering: '-substation',dec_type: 10, page_size: 6000 })
               .then((res) => {
                 if (!res) return;
                 this.basicStatis.camera.data = res.results.map((item, index) => ({

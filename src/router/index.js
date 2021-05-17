@@ -232,14 +232,14 @@ export const asyncRoutes = {
             title: '巡检点位管理',
           },
         },
-        {
-          path: 'maint-manage',
-          name: 'MaintManage',
-          component: () => import('@/views/patrol/maint-manage'),
-          meta: {
-            title: '检修区域设置',
-          },
-        },
+        // {
+        //   path: 'maint-manage',
+        //   name: 'MaintManage',
+        //   component: () => import('@/views/patrol/maint-manage'),
+        //   meta: {
+        //     title: '检修区域设置',
+        //   },
+        // },
         // {
         //   path: 'robot-manage',
         //   name: 'RobotManage',
