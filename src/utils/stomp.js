@@ -19,6 +19,11 @@ const init = () => {
         (err) => {
           console.error(err);
           reject(err);
+          // 断开重连10之后在进行连接
+          setTimeout(() => {
+            console.log('我是大傻逼');
+            resolve(client);
+          }, 1000);
           // if (retry === 3) {
           //   reject(err);
           // } else {
