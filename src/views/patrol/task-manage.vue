@@ -220,10 +220,10 @@ export default {
   },
   mounted() {
     this.onWebsocketPush();
-  },  
+  },
   beforeDestroy() {
     this.$bus.$off('stomp');
-  },  
+  },
   methods: {
     handleQueryData() {
       this.getTableData();
@@ -310,7 +310,7 @@ export default {
             .postControlApi({
               action: ControlCMD.TASK_CONTROL,
               command: 2,
-              task_id: row.plantask_id,
+              task_id: row.task_id,
               syn: `${row.plantask_name}任务暂停指令下发`,
             })
             .then(() => {
@@ -322,7 +322,7 @@ export default {
             .postControlApi({
               action: ControlCMD.TASK_CONTROL,
               command: 4,
-              task_id: row.plantask_id,
+              task_id: row.task_id,
               syn: `${row.plantask_name}任务停止指令下发`,
             })
             .then(() => {
@@ -334,7 +334,7 @@ export default {
             .postControlApi({
               action: ControlCMD.TASK_CONTROL,
               command: 3,
-              task_id: row.plantask_id,
+              task_id: row.task_id,
               syn: `${row.plantask_name}任务继续指令下发`,
             })
             .then(() => {
@@ -358,10 +358,7 @@ export default {
             // console.log(res);
             // let url = `https://${location.hostname}:8443/html/shares/report/` + res;
             // console.log(url);
-            FileSaver.saveAs(
-              `https://${location.hostname}:8443/html/shares/report/${res}`,
-              res
-            );
+            FileSaver.saveAs(`https://${location.hostname}:8443/html/shares/report/${res}`, res);
           });
           break;
         default:
@@ -398,7 +395,10 @@ export default {
     onWebsocketPush() {
       this.$bus.$on('stomp', (msg) => {
         const { action, item } = msg;
-        if (action === 'task_station_status' && this.taskList.indexOf(item.task_patrolled_id) > -1 ) {
+        if (
+          action === 'task_station_status' &&
+          this.taskList.indexOf(item.task_patrolled_id) > -1
+        ) {
           this.getTableData();
         }
       });
@@ -446,7 +446,9 @@ export default {
               taskState: TASK_STATUS[_source.status] || '-',
               dataSource: DATA_SOURCE[_source.source] || '-',
               //result: { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
-              result: this.tableData[i] ? this.tableData[i].result : { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
+              result: this.tableData[i]
+                ? this.tableData[i].result
+                : { total: _source.total, done: 0, normal: 0, alarm: 0, error: 0, defect: 0 },
             };
             //console.log('progress1',dataItem.progress);
             // this.$api
