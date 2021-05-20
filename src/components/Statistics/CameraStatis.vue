@@ -170,7 +170,7 @@ export default {
       left: 27%;
       width: 120px;
       height: 120px;
-      background-color: #33cc70;
+      background-color: #f7c709;
     }
     &.camera-12 {
       top: 20%;
@@ -184,7 +184,7 @@ export default {
       right: 10%;
       width: 100px;
       height: 100px;
-      background-color: #f7c709;
+      background-color: #33cc70;
     }
     &__name {
       font-size: 12px;
