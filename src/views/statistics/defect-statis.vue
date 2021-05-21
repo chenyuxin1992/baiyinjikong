@@ -304,8 +304,7 @@ export default {
               size: 0,
               query: {
                 bool: {
-                  // eslint-disable-next-line
-                  must: [{ match: { substation_id: station.id }, match: { status: 4 } }],
+                  must: [{ match: { substation_id: station.id } }, { match: { status: 4 } }],
                   filter: [{ range: { record_time: { gte: timeStart, lte: timeEnd } } }],
                 },
               },
@@ -391,7 +390,6 @@ export default {
           }
           defectCountSource.push(defectCountItem);
         }
-
         // 缺陷汇总统计超过10个截取前十个，小于10个显示所有
         if (defectStatisSource.length <= 10 && defectStatisSource != '') {
           this.defectStatis.dataset.source = defectStatisSource;

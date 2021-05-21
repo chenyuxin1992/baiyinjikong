@@ -253,7 +253,7 @@ export default {
               size: 0,
               query: {
                 bool: {
-                  must: [{ match: { substation_id: station.id } }],
+                  must: [{ match: { substation_id: station.id } }, { match: { status: 2 } }],
                   filter: [{ range: { record_time: { gte: timeStart, lte: timeEnd } } }],
                 },
               },
@@ -282,6 +282,7 @@ export default {
           const station = results[i];
           const alarmLevelItem = { ...alarmLevelMap, name: station.name, stationId: station.id };
           await getAlarmLevelItem(station, alarmLevelItem);
+
           if (
             alarmLevelItem[1] != 0 ||
             alarmLevelItem[2] != 0 ||
