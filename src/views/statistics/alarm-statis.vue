@@ -282,8 +282,9 @@ export default {
           const station = results[i];
           const alarmLevelItem = { ...alarmLevelMap, name: station.name, stationId: station.id };
           await getAlarmLevelItem(station, alarmLevelItem);
-          alarmLevelSource.push(alarmLevelItem);
-        }
+         if(alarmLevelItem[1] != 0 || alarmLevelItem[2] != 0 || alarmLevelItem[3] != 0 || alarmLevelItem[4] != 0) {
+             alarmLevelSource.push(alarmLevelItem);
+          } 
         //告警等级统计超过10个截取前十个，小于10个显示所有
         if (alarmLevelSource.length <= 10 && alarmLevelSource != '') {
           this.alarmLevel.dataset.source = alarmLevelSource;
@@ -291,7 +292,9 @@ export default {
           let before10alarmLevelSource = alarmLevelSource.slice(0, 10);
           this.alarmLevel.dataset.source = before10alarmLevelSource;
         }
-      });
+      // eslint-disable-next-line
+       }
+      )
     },
     getAlarmStateData(timeStart, timeEnd) {
       this.$api

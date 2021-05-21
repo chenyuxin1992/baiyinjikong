@@ -67,18 +67,17 @@ export default {
         username: '',
         password: '',
         // username: 'test1',
-        // password: 'qwer!234',        
+        // password: 'qwer!234',
         captcha: '',
         captchaId: '',
         FingerPrintID: '1',
-        withFinger: false
+        withFinger: false,
       },
       loginRules: {
         username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
       },
-      
     };
   },
   created() {
@@ -132,9 +131,9 @@ export default {
       });
     },
     handleKeyUp() {
-        this.loginForm.withFinger = !this.loginForm.withFinger
-        console.log(this.loginForm.withFinger)
-    }
+      this.loginForm.withFinger = !this.loginForm.withFinger;
+      console.log(this.loginForm.withFinger);
+    },
   },
 };
 </script>

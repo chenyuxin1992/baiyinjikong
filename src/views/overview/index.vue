@@ -624,7 +624,11 @@ export default {
           if (!this.basicStatis.camera.data.length) {
             this.basicStatis.camera.loading = true;
             this.$api
-              .getBaseApi('detector_depth', { ordering: '-substation',dec_type: 10, page_size: 6000 })
+              .getBaseApi('detector_depth', {
+                ordering: '-substation',
+                dec_type: 10,
+                page_size: 6000,
+              })
               .then((res) => {
                 if (!res) return;
                 this.basicStatis.camera.data = res.results.map((item, index) => ({

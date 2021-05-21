@@ -15,9 +15,8 @@ const request = axios.create({
 // request.defaults.headers.common['Authorization'] =
 //   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqV0FzOXVVdDVTZHkwcEdUMHk1OUZxeXN5aW5TTkFMdSJ9.7a_GA--fn0qiPaywLxo5CQjIhAyX3PNHP4Jeav5n85k';
 
-request.defaults.headers.common['Authorization'] =
-  'Basic ZWxhc3RpYzphaWNyb2Jv';
-  
+request.defaults.headers.common['Authorization'] = 'Basic ZWxhc3RpYzphaWNyb2Jv';
+
 request.interceptors.request.use(
   (config) => {
     // console.log(config);

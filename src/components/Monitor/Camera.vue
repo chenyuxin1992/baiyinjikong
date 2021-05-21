@@ -168,7 +168,9 @@ export default {
         })
         .then((res) => {
           this.$emit('screenshot', {
-            image: `https://${location.hostname}:8443/media/api/v2/getpicture?devidx=${this.did}&channelno=${this.cno}&time=${this.$moment()}`,
+            image: `https://${location.hostname}:8443/media/api/v2/getpicture?devidx=${
+              this.did
+            }&channelno=${this.cno}&time=${this.$moment()}`,
             title: this.title,
           });
         })
@@ -214,7 +216,7 @@ export default {
               (item) =>
                 `https://${location.hostname}:8443/media/record/${this.did}/${this.cno}/${date}/${item}`
             );
-            console.log('videos',videos);
+            console.log('videos', videos);
             this.$emit('recording', { videos, title: this.title });
           });
         this.$emit('recording', { videos: null, title: this.title });
@@ -412,8 +414,8 @@ export default {
           //     this.rotate = false;
           //   }
           // }
-        });           
-    },  
+        });
+    },
     initPresetPolling() {
       if (!this.presetInterval && this.presetList.length > 1) {
         this.presetInterval = setInterval(() => {

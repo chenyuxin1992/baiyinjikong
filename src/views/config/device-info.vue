@@ -135,7 +135,9 @@ export default {
               });
               this.tableData = data;
             })
-            .catch(err => {console.log(err)})
+            .catch((err) => {
+              console.log(err);
+            })
             .finally(() => {
               this.tableLoad = false;
             });

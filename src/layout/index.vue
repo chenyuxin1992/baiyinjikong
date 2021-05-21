@@ -9,7 +9,9 @@
         <a-menu class="header-menu" mode="horizontal" :default-selected-keys="activeMenu">
           <template v-for="route in routes">
             <a-menu-item v-if="route.meta.single" :key="route.path">
-              <router-link :to="`${route.path}?authority=${authId}`">{{ route.meta.title }}</router-link>
+              <router-link :to="`${route.path}?authority=${authId}`">{{
+                route.meta.title
+              }}</router-link>
             </a-menu-item>
             <a-sub-menu
               v-else
@@ -243,7 +245,7 @@
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }"
       >
-      <div>告警确认后相同告警再次提示时间：</div>
+        <div>告警确认后相同告警再次提示时间：</div>
         <a-form-model-item prop="alarmInterval" label="告警提示间隔">
           <a-input-number
             v-model="configForm.alarmInterval"
@@ -389,7 +391,7 @@ export default {
               const sm4Pwd = sm4Encrypt(value);
               const sm3Pwd = SM3.digest(sm4Pwd, 'utf8', 'hex');
               if (value !== this.password) {
-              //if (sm4Encrypt(value) !== this.password) {
+                //if (sm4Encrypt(value) !== this.password) {
                 callback(new Error('请确认用户密码！'));
               } else {
                 callback();
@@ -411,7 +413,7 @@ export default {
               const sm4Pwd = sm4Encrypt(value);
               const sm3Pwd = SM3.digest(sm4Pwd, 'utf8', 'hex');
               if (value !== this.password) {
-              //if (sm4Encrypt(value) !== this.password) {
+                //if (sm4Encrypt(value) !== this.password) {
                 callback(new Error('请确认旧密码！'));
               } else {
                 callback();

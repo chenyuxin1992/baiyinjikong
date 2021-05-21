@@ -17,7 +17,7 @@ const getBaseApi = (action, params = {}) =>
   axios.get(`/base/modelquery/`, { params: { __: action, ...params } });
 // 基础数据排序
 const getBaseOrding = (action, ordering, params = {}) =>
-  axios.get(`/base/modelquery/`, { params: { __: action,ordering: ordering, ...params } });  
+  axios.get(`/base/modelquery/`, { params: { __: action, ordering: ordering, ...params } });
 // 本地联动配置查询
 const getlocalApi = (params = {}) => axios.get(`/base/linkageaction/`, { params: { ...params } });
 // 本地联动配置新增

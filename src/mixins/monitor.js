@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { DisplayMode, ROBOT_TYPE } from '@/enum';
-import store from '@/store'
+import store from '@/store';
 
 export default {
   data() {
@@ -253,20 +253,20 @@ export default {
                   key: item.id,
                   checkable: false,
                 }));
-                if (store.state.userData.userName === "client1") {
+                if (store.state.userData.userName === 'client1') {
                   //console.log(store.state.userData.userName)
-                  dataRef.children = dataRef.children.filter((_,index) => {
-                    console.log(index%2)
-                    return index%2 == 0
-                  })
-                } 
-                if (store.state.userData.userName === "client2") {
+                  dataRef.children = dataRef.children.filter((_, index) => {
+                    console.log(index % 2);
+                    return index % 2 == 0;
+                  });
+                }
+                if (store.state.userData.userName === 'client2') {
                   //console.log(store.state.userData.userName)
-                  dataRef.children = dataRef.children.filter((_,index) => {
-                    console.log(index%2)
-                    return index%2 == 1
-                  })
-                }  
+                  dataRef.children = dataRef.children.filter((_, index) => {
+                    console.log(index % 2);
+                    return index % 2 == 1;
+                  });
+                }
                 this.treeData = [...this.treeData];
               })
               .finally(() => resolve());
@@ -313,16 +313,16 @@ export default {
                   .finally(() => resolve());
               }
             } else {
-              // 间隔+探测器              
+              // 间隔+探测器
               Promise.all([
                 this.$api.getBaseApi('detector', {
                   substation: dataRef.id,
-                  dec_type__in: '1,2,3'
+                  dec_type__in: '1,2,3',
                 }),
                 this.$api.getBaseApi('detector', {
                   substation: dataRef.id,
                   //ordering: 'name',
-                  dec_type__in: '10'
+                  dec_type__in: '10',
                 }),
               ])
                 .then(([res1, res2]) => {
@@ -362,7 +362,7 @@ export default {
                 // 设备部件
                 this.$api
                   .getBaseApi('area_depth', {
-                    parent: dataRef.id
+                    parent: dataRef.id,
                   })
                   .then((res) => {
                     if (!res || !res.results) return resolve();
@@ -396,7 +396,7 @@ export default {
                   })
                   .finally(() => resolve());
               }
-            } 
+            }
             break;
           case 4:
             if (this.treeRadio === 'device') {
@@ -429,11 +429,11 @@ export default {
                     this.treeData = [...this.treeData];
                   })
                   .finally(() => resolve());
-              }              
+              }
             }
             break;
           case 5:
-            if(this.treeRadio === 'device'){
+            if (this.treeRadio === 'device') {
               if (this.deviceTree === 1) {
                 // 巡视点位
                 this.$api
@@ -463,35 +463,35 @@ export default {
                     this.treeData = [...this.treeData];
                   })
                   .finally(() => resolve());
-              }              
+              }
             }
             break;
-            case 6:
-              if(this.treeRadio === 'device'){
-                if (this.deviceTree === 1) {
-                  // 预置位
-                  this.$api
-                    .getBaseApi('preset_depth', { patrolpoint: dataRef.id })
-                    .then((res) => {
-                      if (!res || !res.results) return resolve();
-                      dataRef.children = res.results.map((item) => {
-                        const { detector } = item;
-                        return {
-                          ...item,
-                          tier: 7, // 树节点层级
-                          key: item.id,
-                          isLeaf: true,
-                          checkable: true,
-                          slots: { icon: 'preset' },
-                        };
-                      });
-                      this.treeData = [...this.treeData];
-                    })
-                    .finally(() => resolve());
-                }
+          case 6:
+            if (this.treeRadio === 'device') {
+              if (this.deviceTree === 1) {
+                // 预置位
+                this.$api
+                  .getBaseApi('preset_depth', { patrolpoint: dataRef.id })
+                  .then((res) => {
+                    if (!res || !res.results) return resolve();
+                    dataRef.children = res.results.map((item) => {
+                      const { detector } = item;
+                      return {
+                        ...item,
+                        tier: 7, // 树节点层级
+                        key: item.id,
+                        isLeaf: true,
+                        checkable: true,
+                        slots: { icon: 'preset' },
+                      };
+                    });
+                    this.treeData = [...this.treeData];
+                  })
+                  .finally(() => resolve());
               }
-              break;
-              
+            }
+            break;
+
           default:
             return resolve();
         }

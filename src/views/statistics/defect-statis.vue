@@ -304,7 +304,8 @@ export default {
               size: 0,
               query: {
                 bool: {
-                  must: [{ match: { substation_id: station.id } }],
+                  // eslint-disable-next-line
+                  must: [{ match: { substation_id: station.id }, match: { status: 4 } }],
                   filter: [{ range: { record_time: { gte: timeStart, lte: timeEnd } } }],
                 },
               },
@@ -380,7 +381,14 @@ export default {
           };
           await getDefectStatisItem(station, defectStatisItem);
           await getDefectCountData(station, defectCountItem, timeStart, timeEnd);
-          defectStatisSource.push(defectStatisItem);
+          if (
+            defectStatisItem[1] != 0 ||
+            defectStatisItem[2] != 0 ||
+            defectStatisItem[3] != 0 ||
+            defectStatisItem[4] != 0
+          ) {
+            defectStatisSource.push(defectStatisItem);
+          }
           defectCountSource.push(defectCountItem);
         }
 

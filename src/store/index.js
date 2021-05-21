@@ -57,7 +57,7 @@ export default new Vuex.Store({
       storage.set('userData', userData);
     },
     SET_TASKDATA(state, taskData) {
-      const { start_time, end_time} = taskData;
+      const { start_time, end_time } = taskData;
       state.taskData = {
         ...taskData,
         duration: moment(end_time).to(moment(start_time), true),
@@ -88,8 +88,8 @@ export default new Vuex.Store({
         const sm4Pwd = sm4Encrypt(data.password);
         //const sm3Pwd = SM3.digest(sm4Pwd, 'utf8', 'hex');
         const params = { ...data, password: sm4Pwd };
-        if(data.withFinger) {
-            API.postUserApi('/base_cas/login_finger', params)
+        if (data.withFinger) {
+          API.postUserApi('/base_cas/login_finger', params)
             .then((res) => {
               const { user, token, expiresAt } = res;
               commit('SET_USERDATA', user);
@@ -103,21 +103,20 @@ export default new Vuex.Store({
               reject(err);
             });
         } else {
-            API.postUserApi('/base_cas/login', params)
-              .then((res) => {
-                const { user, token, expiresAt } = res;
-                commit('SET_USERDATA', user);
-                commit('SET_TOKEN', token, expiresAt);
-                commit('SET_ROUTES', user.authorityId);
-                //commit('SET_PASSWORD', sm4Encrypt(data.password));
-                commit('SET_PASSWORD', data.password);
-                resolve(user.authorityId);
-              })
-              .catch((err) => {
-                reject(err);
-              });
+          API.postUserApi('/base_cas/login', params)
+            .then((res) => {
+              const { user, token, expiresAt } = res;
+              commit('SET_USERDATA', user);
+              commit('SET_TOKEN', token, expiresAt);
+              commit('SET_ROUTES', user.authorityId);
+              //commit('SET_PASSWORD', sm4Encrypt(data.password));
+              commit('SET_PASSWORD', data.password);
+              resolve(user.authorityId);
+            })
+            .catch((err) => {
+              reject(err);
+            });
         }
-        
       });
     },
     userLogout() {

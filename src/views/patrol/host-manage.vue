@@ -144,36 +144,36 @@
           <a-radio :value="1">经纬度坐标</a-radio>
         </a-radio-group>
       </a-form-model-item>
-      <a-form-model-item class="col-12" v-if="threetype==0" prop="threex" label="x值" >
+      <a-form-model-item class="col-12" v-if="threetype == 0" prop="threex" label="x值">
         <a-input v-model="threex" :max-length="20" placeholder="相对坐标x" allow-clear />
       </a-form-model-item>
-      <a-form-model-item class="col-12" v-if="threetype==0" prop="threey" label="y值" >
+      <a-form-model-item class="col-12" v-if="threetype == 0" prop="threey" label="y值">
         <a-input v-model="threey" :max-length="20" placeholder="相对坐标y" allow-clear />
       </a-form-model-item>
-      <a-form-model-item class="col-12" v-if="threetype==0" prop="threez" label="z值" >
+      <a-form-model-item class="col-12" v-if="threetype == 0" prop="threez" label="z值">
         <a-input v-model="threez" :max-length="20" placeholder="相对坐标z" allow-clear />
       </a-form-model-item>
-      <a-form-model-item class="col-12" v-if="threetype==1" prop="threelon" label="经度" >
+      <a-form-model-item class="col-12" v-if="threetype == 1" prop="threelon" label="经度">
         <a-input v-model="threelon" :max-length="20" placeholder="经度" allow-clear />
       </a-form-model-item>
-      <a-form-model-item class="col-12" v-if="threetype==1" prop="threelat" label="纬度" >
+      <a-form-model-item class="col-12" v-if="threetype == 1" prop="threelat" label="纬度">
         <a-input v-model="threelat" :max-length="20" placeholder="纬度" allow-clear />
       </a-form-model-item>
-      <a-form-model-item class="col-12" v-if="threetype==1" prop="threeele" label="高程" >
+      <a-form-model-item class="col-12" v-if="threetype == 1" prop="threeele" label="高程">
         <a-input v-model="threeele" :max-length="20" placeholder="高程" allow-clear />
       </a-form-model-item>
       <template #footer>
         <a-button type="primary" @click="threeModalAction('threeModal1')">提交</a-button>
       </template>
-    </a-modal>    
+    </a-modal>
     <a-modal v-model="threeModal2" title="点位编号信息同步" dialogClass="sg-modal" centered>
-      <a-form-model-item class="col-12" prop="threepointid" label="点位编号" >
+      <a-form-model-item class="col-12" prop="threepointid" label="点位编号">
         <a-input v-model="threepointid" :max-length="80" placeholder="点位编号" allow-clear />
       </a-form-model-item>
       <template #footer>
         <a-button type="primary" @click="threeModalAction('threeModal2')">提交</a-button>
       </template>
-    </a-modal>        
+    </a-modal>
   </a-row>
 </template>
 
@@ -212,11 +212,11 @@ export default {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 50 },
         { title: '变电站', dataIndex: 'substation.name', align: 'center', width: 120 },
-        { title: '巡视主机名称', dataIndex: 'name', align: 'center', width: 140  },
+        { title: '巡视主机名称', dataIndex: 'name', align: 'center', width: 140 },
         { title: '地址', dataIndex: 'ip_address', align: 'center', width: 110 },
         { title: '状态', dataIndex: 'hostState', align: 'center', width: 60 },
         { title: '模型文件同步', align: 'center', scopedSlots: { customRender: 'operation' } },
-        { title: '三维信息指令', align: 'center', scopedSlots: { customRender: 'threeOperation' }  },
+        { title: '三维信息指令', align: 'center', scopedSlots: { customRender: 'threeOperation' } },
       ];
     },
   },
@@ -271,7 +271,7 @@ export default {
           break;
         case 'threeModal2':
           this.threeModal2 = true;
-          break;      
+          break;
         default:
           break;
       }
@@ -416,7 +416,17 @@ export default {
               action: 122,
               command: 1,
               substation_id: this.threeSub,
-              items: [{type: String(this.threetype), x: this.threex, y: this.threey, z: this.threez, lon: this.threelon, lat: this.threelat, ele: this.threeele }],
+              items: [
+                {
+                  type: String(this.threetype),
+                  x: this.threex,
+                  y: this.threey,
+                  z: this.threez,
+                  lon: this.threelon,
+                  lat: this.threelat,
+                  ele: this.threeele,
+                },
+              ],
             })
             .then(() => {
               this.$message.success('三维同步指令下发成功！');
@@ -429,7 +439,7 @@ export default {
               action: 122,
               command: 2,
               substation_id: this.threeSub,
-              items: [{pointid: this.threepointid}],
+              items: [{ pointid: this.threepointid }],
             })
             .then(() => {
               this.$message.success('三维同步指令下发成功！');
@@ -439,7 +449,7 @@ export default {
         default:
           break;
       }
-    },    
+    },
     onTreeCheck(_, { node, checked }) {
       const { dataRef } = node;
       if (checked) {
@@ -497,8 +507,17 @@ export default {
             }
             break;
           case '3d_station_information':
-            alert('三维信息指令结果-摄像机编码:' + item.cameracode + ';水平坐标:' + item.pan + ';垂直坐标:' + item.tilt + ';镜头倍数:' + item.zoom);
-            break;            
+            alert(
+              '三维信息指令结果-摄像机编码:' +
+                item.cameracode +
+                ';水平坐标:' +
+                item.pan +
+                ';垂直坐标:' +
+                item.tilt +
+                ';镜头倍数:' +
+                item.zoom
+            );
+            break;
           default:
             break;
         }

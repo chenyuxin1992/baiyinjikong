@@ -41,8 +41,8 @@
           <a-input-number
             v-if="row.authorityId == '333'"
             class="user-select"
-            v-model="row.priority" 
-            :min="1" 
+            v-model="row.priority"
+            :min="1"
             :max="10"
             @change="onUserPriorityChange($event, row)"
           ></a-input-number>
@@ -59,11 +59,15 @@
           <div class="fingerprint">
             <!-- <a-button size="small" @click="handleUserManage(row, 'edit')">编辑</a-button> -->
             <div v-if="row.FingerPrintID">已录入</div>
-            <a-popconfirm v-if="!row.FingerPrintID" title="确定录入该用户指纹?" @confirm="setFingerprint(row)">
+            <a-popconfirm
+              v-if="!row.FingerPrintID"
+              title="确定录入该用户指纹?"
+              @confirm="setFingerprint(row)"
+            >
               <a-button size="small">录入</a-button>
             </a-popconfirm>
           </div>
-        </template>        
+        </template>
       </a-table>
     </a-col>
 
@@ -187,11 +191,15 @@ export default {
           align: 'center',
           scopedSlots: { customRender: 'userRole' },
         },
-        { title: '用户指纹', align: 'center', width: 200, scopedSlots: { customRender: 'fingerprint' } },
+        {
+          title: '用户指纹',
+          align: 'center',
+          width: 200,
+          scopedSlots: { customRender: 'fingerprint' },
+        },
         { title: '操作', align: 'center', width: 200, scopedSlots: { customRender: 'operation' } },
       ];
     },
-    
   },
   data() {
     return {
@@ -219,7 +227,7 @@ export default {
         showQuickJumper: true,
         showTotal: (total) => `当前共有记录${total}条`,
       },
-      priority: 1
+      priority: 1,
     };
   },
   async created() {
@@ -235,7 +243,7 @@ export default {
         }
       }
     });
-  },  
+  },
   beforeDestroy() {
     if (this.stompSub) {
       this.stompSub.unsubscribe();
@@ -261,7 +269,7 @@ export default {
       });
     },
     setFingerprint(row) {
-      this.$api.postUserApi('/base_cas/finger', {uuid: row.uuid}).then((res) => {
+      this.$api.postUserApi('/base_cas/finger', { uuid: row.uuid }).then((res) => {
         if (!res) return;
       });
     },
@@ -312,7 +320,12 @@ export default {
               }
               const sm4Password = sm4Encrypt(password);
               this.$api
-                .postUserApi('/user/register', { username, password: sm4Password, nickName, authorityId })
+                .postUserApi('/user/register', {
+                  username,
+                  password: sm4Password,
+                  nickName,
+                  authorityId,
+                })
                 .then(() => {
                   this.$message.success('用户创建成功！');
                   this.$refs.userForm.resetFields();
@@ -350,11 +363,9 @@ export default {
         });
     },
     onUserPriorityChange(val, row) {
-      this.$api
-        .postUserApi('/user/setUserPriority', { uuid: row.uuid, priority: val })
-        .then(() => {
-          this.$message.success('用户优先级设置成功！');
-        });
+      this.$api.postUserApi('/user/setUserPriority', { uuid: row.uuid, priority: val }).then(() => {
+        this.$message.success('用户优先级设置成功！');
+      });
     },
     onUploadChange({ file }) {
       // console.log(file);

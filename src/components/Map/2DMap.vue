@@ -50,7 +50,7 @@ export default {
       layer: null,
       image: null,
       baseLayer: null,
-      mapLayer:null,
+      mapLayer: null,
       robotLayer: null,
       rectArea: null,
       rectPrev: null,
@@ -127,8 +127,8 @@ export default {
         offsetY: this.stageY,
       });
     },
-    initMap(url) { 
-      this.loading = true;     
+    initMap(url) {
+      this.loading = true;
       this.initStage();
       if (url) {
         this.baseLayer = new Konva.Layer();
@@ -141,19 +141,18 @@ export default {
           image.setAttrs({
             width: this.stageW,
             height: this.stageH,
-          })
+          });
           this.image = image;
           this.baseLayer.add(this.image);
           this.baseLayer.batchDraw();
-        })
+        });
         this.stage.add(this.baseLayer);
       }
       //------添加巡视机器人-------
       if (this.robots.length > 0) {
-        
         for (const robot of this.robots) {
-            this.addRobot(robot);
-            //this.addRobotPath(robot);
+          this.addRobot(robot);
+          //this.addRobotPath(robot);
         }
       }
       this.loading = false;
@@ -299,7 +298,7 @@ export default {
         });
         const imageW = Math.round(20 / this.scale);
         const imageH = Math.round(20 / this.scale);
-        console.log(this.scale_x , this.scale_y)
+        console.log(this.scale_x, this.scale_y);
         const image = new Konva.Image({
           x: x ? x * this.scale_x : 100,
           y: y ? y * this.scale_y : 100,
@@ -318,7 +317,7 @@ export default {
         });
         this.robotLayer.add(path);
         this.robotLayer.add(image);
-        this.robotLayer.batchDraw()
+        this.robotLayer.batchDraw();
         // 立即绘制元素
         if (immediate) image.draw();
         this.robotList.push({ id, name, status, path, image });
@@ -327,7 +326,7 @@ export default {
       icon.onerror = (err) => {
         //reject(err);
       };
-      icon.src = require('@/assets/images/icon_robot_online.png')
+      icon.src = require('@/assets/images/icon_robot_online.png');
     },
     addRobotPath(pixels, type = 'default', immediate = false) {
       return new Promise((resolve) => {
@@ -382,12 +381,12 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #fff;
-  overflow-x:scroll;
-  overflow-y:scroll;
+  overflow-x: scroll;
+  overflow-y: scroll;
   /deep/ .ant-spin-container {
     width: 100%;
     height: 100%;
-    overflow:scroll;
+    overflow: scroll;
   }
   &-wrapper {
     width: 100%;

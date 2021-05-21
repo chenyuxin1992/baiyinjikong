@@ -142,7 +142,7 @@ export default {
           filterMultiple: false,
           filters: this.actionTypes,
         },
-       // { title: '事件指令', dataIndex: 'actionCmd', align: 'center', width: 200 },
+        // { title: '事件指令', dataIndex: 'actionCmd', align: 'center', width: 200 },
         { title: '事件内容', dataIndex: 'command_disp', align: 'center' },
         { title: '事件结果', dataIndex: 'result', align: 'center', width: 200 },
         { title: '事件来源', dataIndex: 'ip', align: 'center', width: 200, sorter: true },
@@ -338,14 +338,14 @@ export default {
             const { _id, _source } = item;
             const { action, command, type } = _source;
             const actionItem = ACTION_COMMAND[command];
-           // console.log(actionItem)
+            // console.log(actionItem)
             const tableIndex = this.pagination.pageSize * (this.pagination.current - 1) + index + 1;
             const dataItem = {
               ..._source,
               id: _id,
               index: tableIndex,
               actionLevel: ACTION_LEVEL[type] || '-',
-              actionType: actionItem ? actionItem.name : '-'
+              actionType: actionItem ? actionItem.name : '-',
             };
             tableData.push(dataItem);
           });

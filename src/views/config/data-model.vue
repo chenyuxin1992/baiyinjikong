@@ -113,7 +113,11 @@ export default {
           this.tableLoad = true;
           const { psrType, modeltype, distribution } = this.queryForm;
           this.$api
-            .postModelSemantics({ psrType, modeltype: String(modeltype), distribution: String(distribution) })
+            .postModelSemantics({
+              psrType,
+              modeltype: String(modeltype),
+              distribution: String(distribution),
+            })
             .then((res) => {
               //if (!res) return;
               alert(JSON.stringify(res));
@@ -135,7 +139,9 @@ export default {
               });
               this.tableData = data;
             })
-            .catch(err => {console.log(err)})
+            .catch((err) => {
+              console.log(err);
+            })
             .finally(() => {
               this.tableLoad = false;
             });

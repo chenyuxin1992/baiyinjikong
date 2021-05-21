@@ -68,15 +68,15 @@
         <a-time-picker v-model="timeEnd" placeholder="结束时间" />
       </div>
       <div class="video-stream">
-          <a-button
-            class="video-stream__load"
-            type="primary"
-            :disabled="!deviceId"
-            :loading="loadStream"
-            block
-            @click="getVideoStreamList"
-            >加载回放视频流
-          </a-button>
+        <a-button
+          class="video-stream__load"
+          type="primary"
+          :disabled="!deviceId"
+          :loading="loadStream"
+          block
+          @click="getVideoStreamList"
+          >加载回放视频流
+        </a-button>
         <div class="video-stream__action">
           <a-button
             shape="circle"
@@ -435,7 +435,7 @@ export default {
                 if (video) video.loaded = true;
                 this.loadVideo = false;
               } else {
-                this.$message.loading('录像文件加载中...下载进度：' + res.pos + '%' );
+                this.$message.loading('录像文件加载中...下载进度：' + res.pos + '%');
               }
             });
           break;
@@ -459,11 +459,13 @@ export default {
     // 视频录像下载
     handleDownloadRecord(video) {
       if (video) {
-        window.open(`https://${location.hostname}:8443/media/api/v2/downloadMp4?devidx=${this.deviceId}&channelno=${this.channelNo}&filename=${video.name}`);
+        window.open(
+          `https://${location.hostname}:8443/media/api/v2/downloadMp4?devidx=${this.deviceId}&channelno=${this.channelNo}&filename=${video.name}`
+        );
         // FileSaver.saveAs(
         //   `https://${location.hostname}:8443/media/api/v2/downloadMp4?devidx=${this.deviceId}&channelno=${this.channelNo}&filename=${video.name}`,
         //   '任务巡视报告.docx'
-        // );     
+        // );
         // this.$api
         //   .getMediaApi('downloadMp4', {
         //     devidx: this.deviceId,

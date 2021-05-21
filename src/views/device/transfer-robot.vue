@@ -73,10 +73,22 @@ export default {
     recordColumns() {
       return [
         { title: '序号', dataIndex: 'index', align: 'center', width: 20 },
-        { title: '变电站', dataIndex: 'name', align: 'center', width: 40, ellipsis: true },
-        { title: '计划进站时间', dataIndex: 'plan_time', align: 'center', width: 20 , ellipsis: true},
-        { title: '实际进站时间', dataIndex: 'start_time', align: 'center', width: 20 ,ellipsis: true},
-        { title: '执行状态', dataIndex: 'state', align: 'center ', width: 20, ellipsis: true },
+        { title: '变电站', dataIndex: 'name', align: 'center', width: 40, ellipsis: true },
+        {
+          title: '计划进站时间',
+          dataIndex: 'plan_time',
+          align: 'center',
+          width: 20,
+          ellipsis: true,
+        },
+        {
+          title: '实际进站时间',
+          dataIndex: 'start_time',
+          align: 'center',
+          width: 20,
+          ellipsis: true,
+        },
+        { title: '执行状态', dataIndex: 'state', align: 'center ', width: 20, ellipsis: true },
       ];
     },
   },
@@ -218,7 +230,10 @@ export default {
               index: tableIndex,
               plan_time: robottransportplan.start_time,
               state: ROBOT_TRANSPORT_STATUS[robottransportplan.status] || '-',
-              name: robottransportplan.substation_out.name + '→' + robottransportplan.substation_in.name,
+              name:
+                robottransportplan.substation_out.name +
+                '→' +
+                robottransportplan.substation_in.name,
             });
           });
           this.recordData = recordData;

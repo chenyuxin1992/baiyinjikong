@@ -276,7 +276,9 @@ export default {
               });
               this.pagination.total = total;
             })
-            .catch(err => {console.log(err)})
+            .catch((err) => {
+              console.log(err);
+            })
             .finally(() => {
               this.tableLoad = false;
             });

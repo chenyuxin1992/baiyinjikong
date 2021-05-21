@@ -1028,27 +1028,27 @@ export default {
         if (action === 'detector_station_status' && item.detector_id == this.robotId) {
           switch (item.type) {
             case 1:
-              if(item.value == 1){
+              if (item.value == 1) {
                 this.$message.warn('机器人电池电量低！');
               }
               break;
             case 2:
-              if(item.value == 1){
+              if (item.value == 1) {
                 this.$message.warn('机器人通信状态异常！');
               }
               break;
             case 3:
-              if(item.value == 1){
+              if (item.value == 1) {
                 this.$message.warn('机器人超声停障！');
               }
               break;
             case 4:
-              if(item.value == 1){
+              if (item.value == 1) {
                 this.$message.warn('机器人驱动异常！');
               }
               break;
             case 21:
-              if(item.value == 1){
+              if (item.value == 1) {
                 this.$message.warn('机器人故障报警！');
               }
               break;
@@ -1325,8 +1325,8 @@ export default {
           });
       }
     },
-    callPresetpoint(ptzh,ptzv,ptzz){
-      console.log(ptzh,ptzv,ptzz);
+    callPresetpoint(ptzh, ptzv, ptzz) {
+      console.log(ptzh, ptzv, ptzz);
       this.$api
         .getMediaApi('setptzpos', {
           idx: this.cameraId,
@@ -1345,7 +1345,7 @@ export default {
           //     this.rotate = false;
           //   }
           // }
-        });      
+        });
     },
     sendCameraCmd(cmd, para1, para2) {
       if (!this.cameraId || !this.cameraNo) return;
